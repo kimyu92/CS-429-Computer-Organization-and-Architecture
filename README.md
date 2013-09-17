@@ -1,14 +1,14 @@
 # CS 429:
-Computer Organization and Architecture Introduction
-=============================================
-### Author:
+# Computer Organization and Architecture
+
+## Author:
 * Kim Yu Ng
 
-### Course Syllabus:
-Will update soon
+## Course Syllabus:
+[Click here](https://github.com/kimyu92/CS-429-Computer-Organization-and-Architecture/blob/master/course_overview.pdf)
 
 #### Language:
-Objective-C
+* Objective-C
 
-### IDE
-* SublimeText
+## IDE
+* [SublimeText](http://www.sublimetext.com)
