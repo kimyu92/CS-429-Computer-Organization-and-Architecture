@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE * input;
+FILE *input;
+FILE *output;
 
 typedef short Boolean;
 #define TRUE 1
@@ -19,7 +20,6 @@ void encode(FILE *thisfile);
 //================================
 //End of Declaration
 //================================
-
 
 
 /*Scan command argument*/
@@ -124,18 +124,59 @@ int main(int   argc, char **argv){
 
 void encode(FILE *thisfile){
 	int aByte;
-	int currentChar;
+	int checking;
+
 	unsigned char bufferingBit;
+	unsigned char remainingBit;
+
 	Boolean is8Bit = FALSE;
 
+	//output = fopen("result.txt","w+");
+	output = fopen("result.txt","w+");
+
 	while ( (aByte = fgetc(thisfile)) != EOF ){
+		
+
 		fprintf(stdout,"%x\n", aByte);
 
-		for (int i = 0; i < ; i++){
-			
-		}
+		//Get the 5 bit
+		bufferingBit = (aByte >> 3) & ( ~(1 << 7 >> 2) ); 
 
-		fwrite (&bit_buffer, 1, 1, f);
+
+		//Dont forget the 3 bit
+		//Carry to next one
+		remainingBit = aByte << 5;
+
+
+		//Add 65
+		bufferingBit = bufferingBit + 65;
+
+
+
+		//Check out of bound or not
+		//If in-bound, add 65
+		//If not, subtract 26
+
+		if(bufferingBit > 90)
+			bufferingBit = (bufferingBit - 65) - 26;
+
+
+
+		//Make into 8 bit
+		//Write into the file
+		printf("CHECKING     \n");
+		checking = fwrite (&bufferingBit, 1, 1, output);
+		
+		printf("%d\n\n", checking);
+
+
+
+
+
+
+
+		//fwrite (&bit_buffer, 1, 1, f);
+		bufferingBit = 0;
 
 	}
 
