@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 FILE *input;
 FILE *output;
@@ -10,6 +11,7 @@ typedef short Boolean;
 #define FALSE 0
 
 typedef char *String;
+
 
 Boolean d_option = FALSE; /* */
 Boolean e_option = FALSE; /* */
@@ -124,61 +126,169 @@ int main(int   argc, char **argv){
 
 void encode(FILE *thisfile){
 	int aByte;
-	int checking;
+	int howManyBytes;
+	unsigned int checking;
+	int howManytoShift;
 
-	unsigned char bufferingBit;
-	unsigned char remainingBit;
+	int i = 0;
+	int j;
+	int k;
+	int move;
+	int startIndex = 0;
+	unsigned char mask;
 
-	Boolean is8Bit = FALSE;
+	
 
-	//output = fopen("result.txt","w+");
+	unsigned char temp;
+	static unsigned char bufferingBit[40];
+
+	// char  abccc = 'F';
+	// char  abccc1 = 'f';
+	// char  abccc2 = 'f';
+
 	output = fopen("result.txt","w+");
+	//printf("%x\n", mask);
+
+	// printf("%d\n", (abccc >> 7)&1 );
+	// printf("%d\n", abccc);
+	// printf("%d\n", (abccc >> 6)&1 );
+	// printf("%d\n", abccc);
+	// printf("%d\n", (abccc >> 5)&1);
+	// printf("%d\n", ((abccc <<3 )>> 7)&1);
+	// printf("%d\n", ((abccc <<4 )>> 7)&1);
+	// printf("%d\n", ((abccc <<5 )>> 7)&1);
+	// printf("%d\n", ((abccc <<6 )>> 7)&1);
+	// printf("%d\n\n", ((abccc <<7 )>> 7)&1);
+
 
 	while ( (aByte = fgetc(thisfile)) != EOF ){
 		
+		fprintf(stdout,"%x\n\n", aByte);
 
-		fprintf(stdout,"%x\n", aByte);
+		while( i < 8){
+			howManytoShift = 7 - i;
+			mask = aByte >> howManytoShift;
+			
+			printf("%d\n", (mask&1));
 
-		//Get the 5 bit
-		bufferingBit = (aByte >> 3) & ( ~(1 << 7 >> 2) ); 
+			for (j = 0; j < 40; j++){
+				printf("%x", bufferingBit[i]);
+
+				if(j ==19)
+					printf("\n");
+			}
+			printf("\n");
+
+			bufferingBit[ startIndex + i] = (mask & 0x01);
+			i++;
+		}
+		
+
+		i = 0;
+		
+		//printstuff(bufferingBit);
+
+		// for (k = 0; k < 39; k++)
+		// 	printf("%c", bufferingBit[k]);
+
+		// printf("\n");
+		//bufferingBit |= aByte << howManyBytes;
+
+		if(startIndex == 40){
+			printf("PAAAAAAAAAAAAAAAAAAAAAAAAAASDSS\n");
+			for (k = 0; k < 40; k++){
+    			
+    			move = i % 8;
+
+    			temp |= (bufferingBit[k] & 1) << move;
+				//temp |= (bufferingBit[k] == '1') << move;
+				
+
+				if( (k + 1)%8 == 0){	
+					checking = fwrite (&temp, 1, 1, output);
+           			printf("%d\n\n", checking);
+           			temp = 0;
+           		}
+
+			}
+
+			k = 0;
+			startIndex = 0;
+		}
 
 
-		//Dont forget the 3 bit
-		//Carry to next one
-		remainingBit = aByte << 5;
+		startIndex = startIndex + 8;
+
+		
+	}
+
+	printf("End of the encoding\n");
+}
+
+void printstuff(unsigned char bufferingBit[]){
+	int i;
+
+	for (i = 0; i < 40; i++){
+			printf("%x", bufferingBit[i]);
+	}
+
+	printf("\n");
+
+}
+
+// //Get the 5 bit
+		// bufferingBit = (aByte >> 3) & ( ~(1 << 7 >> 2) ); 
 
 
-		//Add 65
-		bufferingBit = bufferingBit + 65;
+		// //Dont forget the 3 bit
+		// //Carry to next one
+		// remainingBit = aByte << 5;
+
+
+		// //Add 65
+		// bufferingBit = bufferingBit + 65;
 
 
 
-		//Check out of bound or not
-		//If in-bound, add 65
-		//If not, subtract 26
+		// //Check out of bound or not
+		// //If in-bound, add 65
+		// //If not, subtract 26
 
-		if(bufferingBit > 90)
-			bufferingBit = (bufferingBit - 65) - 26;
+		// if(bufferingBit > 90)
+		// 	bufferingBit = (bufferingBit - 65) - 26;
 
 
 
 		//Make into 8 bit
 		//Write into the file
-		printf("CHECKING     \n");
-		checking = fwrite (&bufferingBit, 1, 1, output);
+		// printf("CHECKING     \n");
+		// checking = fwrite (&bufferingBit, 1, 1, output);
 		
-		printf("%d\n\n", checking);
+		// printf("%d\n\n", checking);
+
+		// //fwrite (&bit_buffer, 1, 1, f);
+		// bufferingBit = 0;
 
 
 
+            	// temp = bufferingBit;
 
+            	// temp = ((bufferingBit >> 31) & mask) & 0xFF; 
+            	// checking = fwrite (&temp, 1, 1, output);
+            	// printf("%d\n\n", checking);
 
+            	// temp = ((bufferingBit >> 23) & mask) & 0xFF;; 
+            	// checking = fwrite (&temp, 1, 1, output);
+            	// printf("%d\n\n", checking);
 
+            	// temp = ((bufferingBit >> 15) & mask) & 0xFF;; 
+            	// checking = fwrite (&temp, 1, 1, output);
+            	// printf("%d\n\n", checking);
 
-		//fwrite (&bit_buffer, 1, 1, f);
-		bufferingBit = 0;
+            	// temp = ((bufferingBit >> 7) & mask) & 0xFF;; 
+            	// checking = fwrite (&temp, 1, 1, output);
+            	// printf("%d\n\n", checking);
 
-	}
-
-	printf("End of the encoding\n");
-}
+            	// temp = ((bufferingBit >> 0) & mask) & 0xFF;;
+            	// checking = fwrite (&temp, 1, 1, output);
+            	// printf("%d\n\n", checking);
