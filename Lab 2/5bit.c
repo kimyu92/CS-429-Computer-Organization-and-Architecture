@@ -130,42 +130,25 @@ void encode(FILE *thisfile){
 	unsigned int checking;
 	int howManytoShift;
 
-	int i = 0;
-	int j;
-	int k;
-	int l;
+	int i, j, k, l;
 	int move;
 	int startIndex = 0;
 	unsigned char mask;
-
 	unsigned char temp = 0;
 	static unsigned char bufferingBit[40];
-	//static unsigned char bufferingBit[5];
+
 
 	output = fopen("result.txt","w");
 
 
 	while ( (aByte = fgetc(thisfile)) != EOF ){
 		
-		fprintf(stdout,"I am reading this byte %d which is %c\n\n", aByte, aByte);
+		//fprintf(stdout,"I am reading this byte %d which is %c\n\n", aByte, aByte);
 
 		//Placing 8bits in the char array
 		while( i < 8){
 			howManytoShift = 7 - i;
 			mask = aByte >> howManytoShift;
-			
-			// printf("%d\n", (mask&1));
-
-			if( i == 7){
-				for (j = 0; j < 40; j++){
-					printf("%x", bufferingBit[j]);
-
-					if(j ==19)
-						printf("\n");
-				}
-				printf("\n\n");
-			}
-
 			bufferingBit[ startIndex + i] = (mask & 0x01);
 			i++;
 		}
@@ -174,8 +157,9 @@ void encode(FILE *thisfile){
 		i = 0;
 		
 		//printstuff(bufferingBit);
-		 // for (j = 0; j < 39; j++)
-		 // 	printf("%d", bufferingBit[j]);
+		//for (j = 0; j < 39; j++)
+		//  printf("%d", bufferingBit[j]);
+
 		printf("Start Index: %d\n", startIndex);
 
 		if (startIndex < 40)
@@ -211,13 +195,13 @@ void encode(FILE *thisfile){
 				
 				printf(" Worrkkkss  %d\n", temp);
 
-				if( (k + 1) % 5 == 0){
+				if( (k + 1) % 5 == 0 || ( ((k + 1) % startIndex) == 0) ){
 					printf(" Worrkkkss 2 %d\n", temp);
 					
 					if (temp < 26)
 						temp = temp + 'A';
 					else
-						temp - 26;
+						temp = temp - 26;
 
 
 					printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
@@ -225,9 +209,7 @@ void encode(FILE *thisfile){
 					//checking = fwrite (temp, 1, 1, output);
            			//printf("What did you write %d\n\n", temp);
            			//printf(")
-           			temp = temp & 0;
-
-           			
+           			temp = temp & 0;          			
            		}
            		
 
@@ -237,12 +219,9 @@ void encode(FILE *thisfile){
 			
 		}
 
-		// if(k == 4)
-  //          	temp = 0;
-
 		
 		
-		if (startIndex ==40){
+		if (startIndex == 40){
 		 	startIndex = 0;
 
 		 	for(l = 0; l < 40 ; l++)
@@ -251,6 +230,84 @@ void encode(FILE *thisfile){
 
 		
 	}
+
+
+	//debugging outside array
+	for (j = 0; j < 40; j++){
+		printf("%x", bufferingBit[j]);
+
+		if(j ==19)
+			printf("\n");
+	}
+	printf("\n");
+
+	i = 0;
+
+	printf("This is so cool %d\n", startIndex);
+
+
+
+
+
+	//padding
+	while(i < startIndex){
+
+		printf("Enter here like a boss\n");
+			move = 4 - (i % 5);
+			
+			if(i == 5){
+				temp = 0;
+				printf("Resetting   %d\n", temp);
+			}
+
+			temp |= ((bufferingBit[i] & 0x1) << move);
+
+
+			printf(" Worrkkkss  %d\n", temp);
+
+			if( (i + 1) % 5 == 0){
+				printf(" Worrkkkss 2 %d\n", temp);
+
+				if (temp < 26)
+					temp = temp + 'A';
+				else
+					temp = temp - 26;
+
+
+				printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+
+					//checking = fwrite (temp, 1, 1, output);
+           			//printf("What did you write %d\n\n", temp);
+           			//printf(")
+				temp = temp & 0;
+			}
+			else if( (i + 1) % startIndex == 0){
+				printf(" Worrkkkss 2 %d\n", temp);
+
+				if (temp < 26)
+					temp = temp + 'A';
+				else
+					temp = temp - 26;
+
+
+				printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+
+					//checking = fwrite (temp, 1, 1, output);
+           			//printf("What did you write %d\n\n", temp);
+           			//printf(")
+				temp = temp & 0;
+			}
+
+
+
+		
+		i++;
+	}
+
+
+
+
+
 
 	printf("End of the encoding\n");
 }
