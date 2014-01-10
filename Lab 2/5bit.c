@@ -133,91 +133,121 @@ void encode(FILE *thisfile){
 	int i = 0;
 	int j;
 	int k;
+	int l;
 	int move;
 	int startIndex = 0;
 	unsigned char mask;
 
-	
-
-	unsigned char temp;
+	unsigned char temp = 0;
 	static unsigned char bufferingBit[40];
+	//static unsigned char bufferingBit[5];
 
-	// char  abccc = 'F';
-	// char  abccc1 = 'f';
-	// char  abccc2 = 'f';
-
-	output = fopen("result.txt","w+");
-	//printf("%x\n", mask);
-
-	// printf("%d\n", (abccc >> 7)&1 );
-	// printf("%d\n", abccc);
-	// printf("%d\n", (abccc >> 6)&1 );
-	// printf("%d\n", abccc);
-	// printf("%d\n", (abccc >> 5)&1);
-	// printf("%d\n", ((abccc <<3 )>> 7)&1);
-	// printf("%d\n", ((abccc <<4 )>> 7)&1);
-	// printf("%d\n", ((abccc <<5 )>> 7)&1);
-	// printf("%d\n", ((abccc <<6 )>> 7)&1);
-	// printf("%d\n\n", ((abccc <<7 )>> 7)&1);
+	output = fopen("result.txt","w");
 
 
 	while ( (aByte = fgetc(thisfile)) != EOF ){
 		
-		fprintf(stdout,"%x\n\n", aByte);
+		fprintf(stdout,"I am reading this byte %d which is %c\n\n", aByte, aByte);
 
+		//Placing 8bits in the char array
 		while( i < 8){
 			howManytoShift = 7 - i;
 			mask = aByte >> howManytoShift;
 			
-			printf("%d\n", (mask&1));
+			// printf("%d\n", (mask&1));
 
-			for (j = 0; j < 40; j++){
-				printf("%x", bufferingBit[i]);
+			if( i == 7){
+				for (j = 0; j < 40; j++){
+					printf("%x", bufferingBit[j]);
 
-				if(j ==19)
-					printf("\n");
+					if(j ==19)
+						printf("\n");
+				}
+				printf("\n\n");
 			}
-			printf("\n");
 
 			bufferingBit[ startIndex + i] = (mask & 0x01);
 			i++;
 		}
 		
-
+		//reset the bit index
 		i = 0;
 		
 		//printstuff(bufferingBit);
+		 // for (j = 0; j < 39; j++)
+		 // 	printf("%d", bufferingBit[j]);
+		printf("Start Index: %d\n", startIndex);
 
-		// for (k = 0; k < 39; k++)
-		// 	printf("%c", bufferingBit[k]);
+		if (startIndex < 40)
+			startIndex = startIndex + 8;
 
-		// printf("\n");
-		//bufferingBit |= aByte << howManyBytes;
 
-		if(startIndex == 40){
-			printf("PAAAAAAAAAAAAAAAAAAAAAAAAAASDSS\n");
+		//When my array is full tank
+		if((startIndex) == 40){
+			printf("This is array 40 time to add\n");
+
+			for (j = 0; j < 40; j++){
+				printf("%x", bufferingBit[j]);
+
+				if(j ==19)
+					printf("\n");
+			}
+			printf("\n");
+			
+
+			//Read five bit until 5 bytes reached
 			for (k = 0; k < 40; k++){
     			
-    			move = i % 8;
+    			move = 4 - (k % 5);
 
-    			temp |= (bufferingBit[k] & 1) << move;
-				//temp |= (bufferingBit[k] == '1') << move;
+    			if(k == 5){
+    				temp = 0;
+    				printf("Resetting   %d\n", temp);
+
+    			}
+
+    			temp |= ((bufferingBit[k] & 0x1) << move);
+
 				
+				printf(" Worrkkkss  %d\n", temp);
 
-				if( (k + 1)%8 == 0){	
-					checking = fwrite (&temp, 1, 1, output);
-           			printf("%d\n\n", checking);
-           			temp = 0;
+				if( (k + 1) % 5 == 0){
+					printf(" Worrkkkss 2 %d\n", temp);
+					
+					if (temp < 26)
+						temp = temp + 'A';
+					else
+						temp - 26;
+
+
+					printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+
+					//checking = fwrite (temp, 1, 1, output);
+           			//printf("What did you write %d\n\n", temp);
+           			//printf(")
+           			temp = temp & 0;
+
+           			
            		}
+           		
 
 			}
 
 			k = 0;
-			startIndex = 0;
+			
 		}
 
+		// if(k == 4)
+  //          	temp = 0;
 
-		startIndex = startIndex + 8;
+		
+		
+		if (startIndex ==40){
+		 	startIndex = 0;
+
+		 	for(l = 0; l < 40 ; l++)
+		 		bufferingBit[l] = 0;
+		}
 
 		
 	}
