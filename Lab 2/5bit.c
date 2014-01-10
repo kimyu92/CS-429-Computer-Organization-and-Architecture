@@ -17,7 +17,7 @@ Boolean d_option = FALSE; /* */
 Boolean e_option = FALSE; /* */
 
 void doProcess(String filename);
-void encode(FILE *thisfile);
+int encode(FILE *thisfile);
 
 //================================
 //End of Declaration
@@ -124,27 +124,27 @@ int main(int   argc, char **argv){
 }
 
 
-void encode(FILE *thisfile){
+int encode(FILE *thisfile){
 	int aByte;
 	int howManyBytes;
-	unsigned int checking;
 	int howManytoShift;
 
-	int i, j, k, l;
-	int move;
+	int move = 0;
 	int startIndex = 0;
+
+	unsigned int checking;
 	unsigned char mask;
 	unsigned char temp = 0;
 	static unsigned char bufferingBit[40];
 
+	int i = 0; 
+	int k = 0;
+	int l = 0;
 
-	output = fopen("result.txt","w");
-
+	output = fopen("result.txt","w+");
 
 	while ( (aByte = fgetc(thisfile)) != EOF ){
 		
-		//fprintf(stdout,"I am reading this byte %d which is %c\n\n", aByte, aByte);
-
 		//Placing 8bits in the char array
 		while( i < 8){
 			howManytoShift = 7 - i;
@@ -155,12 +155,6 @@ void encode(FILE *thisfile){
 		
 		//reset the bit index
 		i = 0;
-		
-		//printstuff(bufferingBit);
-		//for (j = 0; j < 39; j++)
-		//  printf("%d", bufferingBit[j]);
-
-		printf("Start Index: %d\n", startIndex);
 
 		if (startIndex < 40)
 			startIndex = startIndex + 8;
@@ -168,139 +162,78 @@ void encode(FILE *thisfile){
 
 		//When my array is full tank
 		if((startIndex) == 40){
-			printf("This is array 40 time to add\n");
-
-			for (j = 0; j < 40; j++){
-				printf("%x", bufferingBit[j]);
-
-				if(j ==19)
-					printf("\n");
-			}
-			printf("\n");
-			
 
 			//Read five bit until 5 bytes reached
 			for (k = 0; k < 40; k++){
-    			
     			move = 4 - (k % 5);
 
-    			if(k == 5){
+    			if(k == 5)
     				temp = 0;
-    				printf("Resetting   %d\n", temp);
-
-    			}
-
+    			
     			temp |= ((bufferingBit[k] & 0x1) << move);
 
-				
-				printf(" Worrkkkss  %d\n", temp);
 
-				if( (k + 1) % 5 == 0 || ( ((k + 1) % startIndex) == 0) ){
-					printf(" Worrkkkss 2 %d\n", temp);
-					
+				if( (k + 1) % 5 == 0 ){
 					if (temp < 26)
 						temp = temp + 'A';
 					else
 						temp = temp - 26;
 
-
 					printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
 
-					//checking = fwrite (temp, 1, 1, output);
-           			//printf("What did you write %d\n\n", temp);
-           			//printf(")
            			temp = temp & 0;          			
            		}
-           		
-
 			}
 
 			k = 0;
-			
 		}
 
-		
-		
+		//Resetting the array
 		if (startIndex == 40){
 		 	startIndex = 0;
 
 		 	for(l = 0; l < 40 ; l++)
 		 		bufferingBit[l] = 0;
-		}
-
-		
+		}	
 	}
 
-
-	//debugging outside array
-	for (j = 0; j < 40; j++){
-		printf("%x", bufferingBit[j]);
-
-		if(j ==19)
-			printf("\n");
-	}
-	printf("\n");
-
+	//Reuse the index of i
 	i = 0;
 
-	printf("This is so cool %d\n", startIndex);
-
-
-
-
-
-	//padding
+	//printf("This is so cool %d\n", startIndex);
+	//Padding the last remaining bytes
 	while(i < startIndex){
-
-		printf("Enter here like a boss\n");
 			move = 4 - (i % 5);
 			
-			if(i == 5){
+			if(i == 5)
 				temp = 0;
-				printf("Resetting   %d\n", temp);
-			}
 
+			//Padding a bit from array
 			temp |= ((bufferingBit[i] & 0x1) << move);
 
-
-			printf(" Worrkkkss  %d\n", temp);
-
 			if( (i + 1) % 5 == 0){
-				printf(" Worrkkkss 2 %d\n", temp);
-
 				if (temp < 26)
 					temp = temp + 'A';
 				else
 					temp = temp - 26;
 
-
 				printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
 
-					//checking = fwrite (temp, 1, 1, output);
-           			//printf("What did you write %d\n\n", temp);
-           			//printf(")
 				temp = temp & 0;
 			}
 			else if( (i + 1) % startIndex == 0){
-				printf(" Worrkkkss 2 %d\n", temp);
 
 				if (temp < 26)
 					temp = temp + 'A';
 				else
 					temp = temp - 26;
 
-
 				printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
 
-					//checking = fwrite (temp, 1, 1, output);
-           			//printf("What did you write %d\n\n", temp);
-           			//printf(")
 				temp = temp & 0;
 			}
 
 
-
-		
 		i++;
 	}
 
@@ -310,72 +243,5 @@ void encode(FILE *thisfile){
 
 
 	printf("End of the encoding\n");
+	return 0;
 }
-
-void printstuff(unsigned char bufferingBit[]){
-	int i;
-
-	for (i = 0; i < 40; i++){
-			printf("%x", bufferingBit[i]);
-	}
-
-	printf("\n");
-
-}
-
-// //Get the 5 bit
-		// bufferingBit = (aByte >> 3) & ( ~(1 << 7 >> 2) ); 
-
-
-		// //Dont forget the 3 bit
-		// //Carry to next one
-		// remainingBit = aByte << 5;
-
-
-		// //Add 65
-		// bufferingBit = bufferingBit + 65;
-
-
-
-		// //Check out of bound or not
-		// //If in-bound, add 65
-		// //If not, subtract 26
-
-		// if(bufferingBit > 90)
-		// 	bufferingBit = (bufferingBit - 65) - 26;
-
-
-
-		//Make into 8 bit
-		//Write into the file
-		// printf("CHECKING     \n");
-		// checking = fwrite (&bufferingBit, 1, 1, output);
-		
-		// printf("%d\n\n", checking);
-
-		// //fwrite (&bit_buffer, 1, 1, f);
-		// bufferingBit = 0;
-
-
-
-            	// temp = bufferingBit;
-
-            	// temp = ((bufferingBit >> 31) & mask) & 0xFF; 
-            	// checking = fwrite (&temp, 1, 1, output);
-            	// printf("%d\n\n", checking);
-
-            	// temp = ((bufferingBit >> 23) & mask) & 0xFF;; 
-            	// checking = fwrite (&temp, 1, 1, output);
-            	// printf("%d\n\n", checking);
-
-            	// temp = ((bufferingBit >> 15) & mask) & 0xFF;; 
-            	// checking = fwrite (&temp, 1, 1, output);
-            	// printf("%d\n\n", checking);
-
-            	// temp = ((bufferingBit >> 7) & mask) & 0xFF;; 
-            	// checking = fwrite (&temp, 1, 1, output);
-            	// printf("%d\n\n", checking);
-
-            	// temp = ((bufferingBit >> 0) & mask) & 0xFF;;
-            	// checking = fwrite (&temp, 1, 1, output);
-            	// printf("%d\n\n", checking);
