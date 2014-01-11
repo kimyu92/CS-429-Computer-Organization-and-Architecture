@@ -18,6 +18,7 @@ Boolean e_option = FALSE; /* */
 
 void doProcess(String filename);
 void encode(FILE *thisfile);
+void decode(FILE *thisfile);
 int printTheNextLine(int line);
 //================================
 //End of Declaration
@@ -77,6 +78,9 @@ void doProcess(String filename){
     	thisfile = fopen(filename, "r");
     	encode(thisfile);
 
+    	if(d_option)
+    		decode(thisfile);
+
     	fclose(thisfile);
     	//Call the encoding method
     }
@@ -124,7 +128,7 @@ int main(int   argc, char **argv){
 
 }
 
-
+//Encoding
 void encode(FILE *thisfile){
 	int aByte;
 	int howManyBytes;
@@ -204,12 +208,6 @@ void encode(FILE *thisfile){
 		 	for(l = 0; l < 40 ; l++)
 		 		bufferingBit[l] = 0;
 		}
-
-		
-		if (line == 72)
-			line = 0;
-
-		
 	}
 
 	//Reuse the index of i
@@ -238,10 +236,6 @@ void encode(FILE *thisfile){
 					printf("%d", temp);
 				}
 
-				//printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
-				//printf("%c", temp);
-				//printChar(temp);
-
 				line = printTheNextLine(line);
 				temp = temp & 0;
 			}
@@ -263,13 +257,107 @@ void encode(FILE *thisfile){
 				temp = temp & 0;
 			}
 
-
-		i++;
-		
-		
+		i++;	
 	}
-	//printf("End of the encoding\n");
 	printf("\n");
+}
+
+
+//Decoding
+void decode(FILE *thisfile){
+	int aByte;
+	int howManyBytes;
+	int howManytoShift;
+
+	int move = 0;
+	int startIndex = 0;
+
+	unsigned int checking;
+	unsigned char mask;
+	int temp;
+	static unsigned int bufferingBit[40];
+
+	int i = 0; 
+	int k = 0;
+	int l = 0;
+	int line = 0;
+
+	output = fopen("result.txt","w+");
+
+	while ( (aByte = fgetc(thisfile)) != EOF ){
+		
+		//Placing 5bits in the char array
+		while( i < 5){
+			
+			//Retrieve a byte by reducing 65
+			if (aByte <= 90)
+				aByte = aByte - 65;
+			else{
+				aByte = aByte + 26;
+			}
+
+			aByte = aByte & (1 << 4 >> 4);
+
+			howManytoShift = 7 - i;
+			mask = aByte >> howManytoShift;
+			bufferingBit[ startIndex + i] = (mask & 0x01);
+			i++;
+		}
+		
+		//reset the bit index
+		i = 0;
+
+		if (startIndex < 40)
+			startIndex = startIndex + 8;
+
+		//When my array is full tank
+		if((startIndex) == 40){
+
+			//Read five bit until 5 bytes reached
+			for (k = 0; k < 40; k++){
+    			move = 4 - (k % 5);
+
+    			if(k == 5)
+    				temp = 0;
+    			
+    			temp |= ((bufferingBit[k] & 0x1) << move);
+
+
+				if( (k + 1) % 5 == 0 ){
+					line++;
+
+					if (temp < 26){
+						temp = temp + 'A';
+						printf("%c", temp);
+					}
+					else{
+						temp = temp - 26;
+						printf("%d", temp);
+					}
+
+					line = printTheNextLine(line);
+
+					//printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+
+           			temp = temp & 0;          			
+           		}
+			}
+
+			k = 0;
+		}
+
+		//Resetting the array
+		if (startIndex == 40){
+		 	startIndex = 0;
+
+		 	for(l = 0; l < 40 ; l++)
+		 		bufferingBit[l] = 0;
+		}
+	}
+
+
+
+
 }
 
 
