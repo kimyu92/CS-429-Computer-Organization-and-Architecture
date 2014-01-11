@@ -17,8 +17,8 @@ Boolean d_option = FALSE; /* */
 Boolean e_option = FALSE; /* */
 
 void doProcess(String filename);
-int encode(FILE *thisfile);
-
+void encode(FILE *thisfile);
+int printTheNextLine(int line);
 //================================
 //End of Declaration
 //================================
@@ -28,7 +28,7 @@ int encode(FILE *thisfile);
 void scanargs(char *s){
 
 	//check each character of the option list for its meaning.
-	while (*s != '\0')
+	while (*s != '\0'){
 		switch (*s++){
             case '-': /* option indicator */
 				break;
@@ -44,6 +44,7 @@ void scanargs(char *s){
 				fprintf(stderr, "       -e -- encode into 5 bit\n\n");
 				exit(1);
 		}
+	}
 }
 
 
@@ -124,7 +125,7 @@ int main(int   argc, char **argv){
 }
 
 
-int encode(FILE *thisfile){
+void encode(FILE *thisfile){
 	int aByte;
 	int howManyBytes;
 	int howManytoShift;
@@ -134,12 +135,13 @@ int encode(FILE *thisfile){
 
 	unsigned int checking;
 	unsigned char mask;
-	unsigned char temp = 0;
-	static unsigned char bufferingBit[40];
+	int temp;
+	static unsigned int bufferingBit[40];
 
 	int i = 0; 
 	int k = 0;
 	int l = 0;
+	int line = 0;
 
 	output = fopen("result.txt","w+");
 
@@ -159,7 +161,6 @@ int encode(FILE *thisfile){
 		if (startIndex < 40)
 			startIndex = startIndex + 8;
 
-
 		//When my array is full tank
 		if((startIndex) == 40){
 
@@ -174,12 +175,20 @@ int encode(FILE *thisfile){
 
 
 				if( (k + 1) % 5 == 0 ){
-					if (temp < 26)
-						temp = temp + 'A';
-					else
-						temp = temp - 26;
+					line++;
 
-					printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+					if (temp < 26){
+						temp = temp + 'A';
+						printf("%c", temp);
+					}
+					else{
+						temp = temp - 26;
+						printf("%d", temp);
+					}
+
+					line = printTheNextLine(line);
+
+					//printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
 
            			temp = temp & 0;          			
            		}
@@ -194,7 +203,13 @@ int encode(FILE *thisfile){
 
 		 	for(l = 0; l < 40 ; l++)
 		 		bufferingBit[l] = 0;
-		}	
+		}
+
+		
+		if (line == 72)
+			line = 0;
+
+		
 	}
 
 	//Reuse the index of i
@@ -212,36 +227,58 @@ int encode(FILE *thisfile){
 			temp |= ((bufferingBit[i] & 0x1) << move);
 
 			if( (i + 1) % 5 == 0){
-				if (temp < 26)
+				line++;
+
+				if (temp < 26){
 					temp = temp + 'A';
-				else
+					printf("%c", temp);
+				}
+				else{
 					temp = temp - 26;
+					printf("%d", temp);
+				}
 
-				printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+				//printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+				//printf("%c", temp);
+				//printChar(temp);
 
+				line = printTheNextLine(line);
 				temp = temp & 0;
 			}
 			else if( (i + 1) % startIndex == 0){
+				line++;
 
-				if (temp < 26)
+				if (temp < 26){
 					temp = temp + 'A';
-				else
+					printf("%c", temp);
+				}
+				else{
 					temp = temp - 26;
+					printf("%d", temp);
+				}
 
-				printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
+				//printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
 
+				line = printTheNextLine(line);
 				temp = temp & 0;
 			}
 
 
 		i++;
+		
+		
+	}
+	//printf("End of the encoding\n");
+	printf("\n");
+}
+
+
+//Print the next line when it is more than 71 chars
+int printTheNextLine(int line){
+	if( line > 71 ){
+		printf("\n");
+		return 0;
 	}
 
-
-
-
-
-
-	printf("End of the encoding\n");
-	return 0;
+	return line;
 }
