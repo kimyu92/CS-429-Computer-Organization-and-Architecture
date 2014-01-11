@@ -4,7 +4,6 @@
 #include <limits.h>
 
 FILE *input;
-FILE *output;
 
 typedef short Boolean;
 #define TRUE 1
@@ -12,102 +11,59 @@ typedef short Boolean;
 
 typedef char *String;
 
-
-Boolean d_option = FALSE; /* */
-Boolean e_option = FALSE; /* */
 Boolean decodingInstruction = FALSE;
 
-void doProcess(String filename);
-void encode(FILE *thisfile);
-void decode(FILE *thisfile);
+void encode();
+void decode();
 int printTheNextLine(int line);
 //================================
 //End of Declaration
 //================================
 
 
-/*Check the file input*/
-Boolean Open_Input_File(char *name){
-	if (name == NULL)
-		input = stdin;
-	else{
-		input = fopen(name, "r");
-
-		if (input == NULL){
-			fprintf(stderr, "Can't open %s\n", name);
-			return(FALSE);
-		}
-	}
-	return(TRUE);
-}
-
-
-/*Validate file can be open or not*/
-void doProcess(String filename){
-    
-
-    if (!Open_Input_File(filename))
-    	return;
-    else{
-    	//printf("File can be open\n");
-
-    	input = fopen(filename, "r");
-    	
-
-    	if(decodingInstruction)
-    		decode(input);
-    	else
-    		encode(input);
-    }
-}
-
-
 int main(int   argc, char **argv){
-	Boolean filenamenotgiven = TRUE;
-
+	Boolean hasFile = FALSE;
 	/* main driver program.  Define the input file
        from either standard input or a name on the
        command line.  Process all arguments. 
     */
 
-
-    while (argc > 1){
+    while (argc > 1 && !hasFile){
 
     	argc--, 
     	argv++;
 
     	if (**argv == '-'){
-    		//scanargs(*argv);
     		decodingInstruction = TRUE;
     	}
     	else{
             
-            filenamenotgiven = FALSE;
             input = fopen(*argv,"r");
 
             if (input == NULL){
             	fprintf (stderr, "\nCan't open %s\n",*argv);
             	printf ("Please retry again.\n\n");
             }
-            
-            doProcess(*argv);
-            fclose(input);
-            
+            hasFile = TRUE;
         }
 
         
     }
 
-    if(decodingInstruction)
-    	decode(input);
-    else
-    	encode(input);
+    if(decodingInstruction){
+    	decode();
+    	fclose(input);
+    }
+    else{
+    	encode();
+    	fclose(input);
+    }
 
     exit(0);
 }
 
 //Encoding
-void encode(FILE *thisfile){
+void encode(){
 	int aByte;
 	int howManyBytes;
 	int howManytoShift;
@@ -125,7 +81,7 @@ void encode(FILE *thisfile){
 	int l = 0;
 	int line = 0;
 
-	while ( (aByte = fgetc(thisfile)) != EOF ){
+	while ( (aByte = fgetc(input)) != EOF ){
 		
 		//Placing 8bits in the char array
 		while( i < 8){
@@ -239,32 +195,22 @@ void encode(FILE *thisfile){
 
 
 //Decoding
-void decode(FILE *thisfile){
+void decode(){
 	int aByte;
 	int howManyBytes;
 	int howManytoShift;
 
-	int move = 0;
-	int startIndex = 0;
-
-	int checking;
 	int aftershift;
 	int temp;
-	static unsigned int bufferingBit[40];
+	int bufferingBit[8];
 
-	int i = 0; 
+	int readSoMuchOfBit = 0;
+	int remaining = 0;
+	int writtenChar = 0;
 	int j = 0;
-	int k = 0;
-	int l = 0;
-	int line = 0;
 
-	//printf("this is so cool decoding method\n everything stat here \n\n");
-	//output = fopen("result.txt","w+");
 
-	while ( (aByte = fgetc(thisfile)) != EOF ){
-		
-		//printf("I am reading this shit   %d %c\n", aByte, aByte);
-
+	while ( (aByte = fgetc(input)) != EOF ){
 		//Retrieve a byte depends on the encoded code
 		if (aByte != 10){
 			if (aByte >= 65)
@@ -273,62 +219,36 @@ void decode(FILE *thisfile){
 				aByte = aByte - 22;
 
 
+			readSoMuchOfBit = 0;
+
 			//Placing 5bits in the char array
-			while( i < 5){
+			while( readSoMuchOfBit < 5){
 
-				howManytoShift = 4 - i;
+				//Shifting
+				howManytoShift = 4 - readSoMuchOfBit;
 				aftershift = aByte >> howManytoShift;
-
-				bufferingBit[ startIndex + i] = (aftershift & 1);
-
-				i++;
-			}
+				bufferingBit[ writtenChar ] = (aftershift & 1);
 
 
-		//reset the bit index
-		i = 0;
+				//Read bit by bit counter
+				readSoMuchOfBit++;
+				writtenChar++;
 
-		if (startIndex < 40)
-			startIndex = startIndex + 5;
-		}
+				//I have five bit
+				if (writtenChar == 8){
+					//Resetting the temp
+					temp &= 0;
 
-		//printf("Inserted index:       %d\n\n", startIndex);
+					for (j = 0; j < 8; j++)
+						temp |= bufferingBit[j] << (7- j);
 
-
-		//When my array is full tank
-		if((startIndex) == 40){
-
-			//Read five bit until 5 bytes reached
-			for (k = 0; k < 40; k++){
-    			//move = 4 - (k % 5);
-    			move = 7 - (k % 8);
-
-    			if(k == 8)
-    				temp = 0;
-    			
-    			temp |= ((bufferingBit[k] & 0x1) << move);
-
-
-				if( (k + 1) % 8 == 0 ){
-					line++;
-
-					//line = printTheNextLine(line);
-
+					//Write it out
 					printf("%c", temp);
 
-           			temp = temp & 0;          			
-           		}
+					writtenChar = 0;
+				}
 			}
 
-			k = 0;
-		}
-
-		//Resetting the array
-		if (startIndex == 40){
-		 	startIndex = 0;
-
-		 	for(l = 0; l < 40 ; l++)
-		 		bufferingBit[l] = 0;
 		}
 	}
 
