@@ -115,8 +115,8 @@ void encode(FILE *thisfile){
 	int move = 0;
 	int startIndex = 0;
 
-	unsigned int checking;
-	unsigned char mask;
+	int checking;
+	int mask;
 	int temp;
 	static unsigned int bufferingBit[40];
 
@@ -124,8 +124,6 @@ void encode(FILE *thisfile){
 	int k = 0;
 	int l = 0;
 	int line = 0;
-
-	output = fopen("result.txt","w+");
 
 	while ( (aByte = fgetc(thisfile)) != EOF ){
 		
@@ -252,7 +250,7 @@ void decode(FILE *thisfile){
 	int checking;
 	int aftershift;
 	int temp;
-	static int bufferingBit[40];
+	static unsigned int bufferingBit[40];
 
 	int i = 0; 
 	int j = 0;
