@@ -55,6 +55,9 @@ int main(int   argc, char **argv){
         
     }
 
+    if (!hasFile)
+    	input = stdin;
+
     if(decodingInstruction){
     	decode();
     	fclose(input);
@@ -63,6 +66,7 @@ int main(int   argc, char **argv){
     	encode();
     	fclose(input);
     }
+
 
     exit(0);
 }
@@ -192,6 +196,8 @@ void encode(){
 
 		i++;	
 	}
+
+	printf("\n");
 }
 
 
