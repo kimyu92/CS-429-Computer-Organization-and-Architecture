@@ -74,139 +74,96 @@ int main(int   argc, char **argv){
 //Encoding
 void encode(){
 	int aByte;
-	int howManyBytes;
-	int howManytoShift;
+	int bufferingBit[5];
 
-	int move = 0;
-	int startIndex = 0;
-	int countFourtyBit = 0;
+	int lineBreak = 0;
+	int countFortyBits = 0;
+	int temp;  		
+	
+	int maxAmountToShift = 4;
 
-	int checking;
-	int mask;
-	int temp;
-	static unsigned int bufferingBit[40];
+	int arrayIndex = 0; 		
+	int howManyBits = 0;
+	
+	int index; 				
+	int shifter;   			
+	Boolean newlineCase; 		
+	
+	int i;
+	int j;
 
-	int i = 0; 
-	int k = 0;
-	int l = 0;
-	int line = 0;
+	while((aByte = getc(input)) != EOF){
 
-	while ( (aByte = fgetc(input)) != EOF ){
-		
-		//Placing 8bits in the char array
-		while( i < 8){
-			howManytoShift = 7 - i;
-			mask = aByte >> howManytoShift;
-			bufferingBit[ startIndex + i] = (mask & 0x01);
-			
-			countFourtyBit++;
-			i++;
-		}
-		
-		//reset the bit index
-		i = 0;
+		index = 0;
+		howManyBits = 0;
+		newlineCase = TRUE;
 
-		if (startIndex < 40)
-			startIndex = startIndex + 8;
+		//Goes through each bit of aByte and put inside 5bit container
+		while(howManyBits < 8){
+			countFortyBits++;
 
-		//When my array is full tank
-		if((startIndex) == 40){
+			shifter = 7-index;
+			i = (aByte >> shifter) & 1;
 
-			//Read five bit until 5 bytes reached
-			for (k = 0; k < 40; k++){
-    			move = 4 - (k % 5);
+			bufferingBit[arrayIndex] = i;
+			arrayIndex++;
+			index++;
 
-    			if(k == 5)
-    				temp = 0;
-    			
-    			temp |= ((bufferingBit[k] & 0x1) << move);
-
-
-				if( (k + 1) % 5 == 0 ){
-					line++;
-
-					if (temp < 26){
-						temp = temp + 'A';
-						printf("%c", temp);
-					}
-					else{
-						temp = temp - 26;
-						printf("%d", temp);
-					}
-
-					line = printTheNextLine(line);
-
-           			temp = temp & 0;          			
-           		}
-			}
-
-			k = 0;
-		}
-
-		//Resetting the array
-		if (startIndex == 40){
-		 	startIndex = 0;
-
-		 	for(l = 0; l < 40 ; l++)
-		 		bufferingBit[l] = 0;
-		}
-	}
-
-	//Reuse the index of i
-	i = 0;
-
-	//printf("This is so cool %d\n", startIndex);
-	//Padding the last remaining bytes
-	while(i < startIndex){
-			move = 4 - (i % 5);
-			
-			if(i == 5)
+			//Go through the array when the array is full tank
+			if(arrayIndex == 5){
 				temp = 0;
 
-			//Padding a bit from array
-			temp |= ((bufferingBit[i] & 0x1) << move);
+				//Take out the bit
+				for(j = 0;j < 5; j++)
+					temp |= (bufferingBit[j] << (maxAmountToShift - j));
 
-			if( (i + 1) % 5 == 0){
-				line++;
-
-				if (temp < 26){
-					temp = temp + 'A';
-					printf("%c", temp);
-				}
-				else{
+				//Write it out
+				if ( (temp + 65) > 90){
 					temp = temp - 26;
 					printf("%d", temp);
 				}
-
-				line = printTheNextLine(line);
-				temp = temp & 0;
-			}
-			else if( (i + 1) % startIndex == 0){
-				line++;
-
-				if (temp < 26){
-					temp = temp + 'A';
+				else{
+					temp = temp + 65;
 					printf("%c", temp);
 				}
-				else{
-					temp = temp - 26;
-					printf("%d", temp);
-				}
 
-				line = printTheNextLine(line);
-				temp = temp & 0;
-
-				printf("\n");
+				lineBreak++;
+				arrayIndex = 0;
 			}
 
-		i++;	
+			howManyBits++;
+		}
+
+		///Check whether have to go next line or not
+		lineBreak = printTheNextLine(lineBreak);
 	}
 
-	//When it is 40 bit and not entering the remaining case
-	//print a \n to pass the test cases
-	if ( ((countFourtyBit + 1) % 40) == 40){
-		printf("\n");
-	}
+	//The edge case where there are remaining bit
+	if (newlineCase == 1)
+		if(arrayIndex > 0){
+			lineBreak++;
+			temp = 0;
+
+			for(i = 0; i < arrayIndex; i++)
+				temp |= bufferingBit[i] << (maxAmountToShift - i);
+			
+			printTheNextLine(lineBreak);
+
+			//Write it out
+			if ( (temp + 65) > 90){
+				temp = temp - 26;
+				printf("%d", temp);
+			}
+			else{
+				temp = temp + 65;
+				printf("%c", temp);
+			}
+
+			printf("\n");
+		}
+		//The special case
+		else if (lineBreak % 70 != 0)
+			printf("\n");
 
 	
 }
