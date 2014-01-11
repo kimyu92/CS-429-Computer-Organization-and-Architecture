@@ -1,7 +1,12 @@
+//Name 	 : Kim Yu Ng
+//CS ID  : kimyu92
+//UT EID : kn6254
+//Section: 53835
+//TA   	 : Ji Hong
+
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <limits.h>
 
 FILE *input;
 
@@ -124,8 +129,6 @@ void encode(){
 
 					line = printTheNextLine(line);
 
-					//printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
-
            			temp = temp & 0;          			
            		}
 			}
@@ -182,8 +185,6 @@ void encode(){
 					temp = temp - 26;
 					printf("%d", temp);
 				}
-
-				//printf(" What is that shit Worrkkkss  %c  %d\n", temp, temp);
 
 				line = printTheNextLine(line);
 				temp = temp & 0;
