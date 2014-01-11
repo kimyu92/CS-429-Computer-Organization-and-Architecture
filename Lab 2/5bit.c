@@ -237,7 +237,7 @@ void encode(FILE *thisfile){
 
 		i++;	
 	}
-	printf("\n");
+	
 }
 
 
@@ -261,93 +261,114 @@ void decode(FILE *thisfile){
 	int l = 0;
 	int line = 0;
 
-	printf("this is so cool decoding method\n everything stat here \n\n");
+	//printf("this is so cool decoding method\n everything stat here \n\n");
 	//output = fopen("result.txt","w+");
 
-	while ( (aByte = fgetc(thisfile)) != EOF ){
+	while ( (aByte = getc(thisfile)) != EOF ){
 		
-		printf("I am reading this shit   %d %c\n", aByte, aByte);
-
-		//Retrieve a byte depends on the encoded code 
-		if (aByte >= 65)
-			aByte = aByte - 65;
-		else
-			aByte = aByte - 22;
+		//printf("I am reading this shit   %d %c\n", aByte, aByte);
 		
+		if (aByte != 10){
 
-		//Placing 5bits in the char array
-		while( i < 5){
-
-			howManytoShift = 4 - i;
-			aftershift = aByte >> howManytoShift;
-			
-			bufferingBit[ startIndex + i] = (aftershift & 1);
-			
-			i++;
-		}
+			//Retrieve a byte depends on the encoded code 
+			if (aByte >= 65)
+				aByte = aByte - 65;
+			else
+				aByte = aByte - 22;
 
 
+			//Placing 5bits in the char array
+			while( i < 5){
 
-		// //Debug
-		for (j = 0; j < 40; j++){
+				howManytoShift = 4 - i;
+				aftershift = aByte >> howManytoShift;
 
-			printf("%d", bufferingBit[j]);
+				bufferingBit[ startIndex + i] = (aftershift & 1);
 
-			if( ((j+1) % 5) == 0 && j!=0 )
-				printf("  ");
-
-		}
-		printf("\n");
-
-
-
-		//reset the bit index
-		i = 0;
-
-		if (startIndex < 40)
-			startIndex = startIndex + 5;
-
-		printf("Inserted index:       %d\n\n", startIndex);
-
-
-		//When my array is full tank
-		if((startIndex) == 40){
-
-			//Read five bit until 5 bytes reached
-			for (k = 0; k < 40; k++){
-    			//move = 4 - (k % 5);
-    			move = 7 - (k % 8);
-
-    			if(k == 8)
-    				temp = 0;
-    			
-    			temp |= ((bufferingBit[k] & 0x1) << move);
-
-
-				if( (k + 1) % 8 == 0 ){
-					line++;
-
-					//line = printTheNextLine(line);
-
-					printf(" What am I writing shittt  %c  %d\n", temp, temp);
-
-           			temp = temp & 0;          			
-           		}
+				i++;
 			}
 
-			k = 0;
-		}
+			
+			// //Debug
+			// for (j = 0; j < 40; j++){
 
-		//Resetting the array
-		if (startIndex == 40){
-		 	startIndex = 0;
+			// 	printf("%d", bufferingBit[j]);
 
-		 	for(l = 0; l < 40 ; l++)
-		 		bufferingBit[l] = 0;
+			// 	if( ((j+1) % 5) == 0 && j!=0 )
+			// 		printf("  ");
+
+			// }
+			// printf("\n");
+
+
+
+			//reset the bit index
+			i = 0;
+
+			if (startIndex < 40)
+				startIndex = startIndex + 5;
+
+			printf("Inserted index:       %d\n\n", startIndex);
+
+
+			//When my array is full tank
+			if((startIndex) == 40){
+
+				//printf("What shit is coming out\n");
+
+				//Read five bit until 5 bytes reached
+				for (k = 0; k < 40; k++){
+    			
+					move = 7 - (k % 8);
+
+					if(k == 8)
+						temp = 0;
+
+					temp |= ((bufferingBit[k] & 0x1) << move);
+
+
+					if( (k + 1) % 8 == 0 ){
+						line++;
+						printf("%c", temp);
+						temp = temp & 0;          			
+					}
+				}
+				k = 0;
+			}
+
+			//Resetting the array
+			if (startIndex == 40){
+				startIndex = 0;
+
+				for(l = 0; l < 40 ; l++)
+					bufferingBit[l] = 0;
+			}
 		}
 	}
 
-	printf("\nEnd of the decoding\n");
+	//Reuse the index of i
+	i = 0;
+
+	printf("This is so cool %d\n", startIndex);
+	
+	//Padding the last remaining bytes
+	while(i < startIndex){
+			move = 7 - (k % 8);
+
+			if(i == 8)
+				temp = 0;
+
+			//Padding a bit from array
+			temp |= ((bufferingBit[i] & 0x1) << move);
+
+			if( (i + 1) % 8 == 0){
+				line++;
+				printf("%c", temp);
+				temp = temp & 0;
+			}
+		i++;	
+	}
+
 
 }
 
