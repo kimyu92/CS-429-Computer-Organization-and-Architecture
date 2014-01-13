@@ -102,8 +102,22 @@ char *somehow_get_a_line(){
     int maxCharInLine = 0;
 
     int i = 0;
-    int count = 0;
+    int col = 0;
+    int objectLength = 0;
+
+    //Testing
+    int k = 0;
+
     String thisString;
+    String object_name;
+
+
+    //first time instantiate
+    fact = (char**) malloc(sizeof(char*) * 10 );
+
+    //To get the inner column
+    for(col = 0; col < 10 ; col++)
+        fact[col] = (char*) malloc(sizeof(char) * 10);
 
     while ( (aByte = fgetc(input)) != EOF){
 
@@ -120,19 +134,38 @@ char *somehow_get_a_line(){
             countedTheLine = FALSE;
 
         //Get the object name
-        if (theStartIsF && countTheLine && aByte != ' '){
-            
+        if (theStartIsF && countedTheLine && aByte != ' '){
+            objectLength++;
         }
 
         //Switch off after a line
         if(aByte == '\n'){
             theStartIsF = FALSE;
 
+            //Find the longest length amongs the line
             if(charInLine > maxCharInLine)
                 maxCharInLine = charInLine;
+
+            charInLine = 0;
+
+            if(objectLength > 0){
+                objectLength +=1;
+                object_name = (char*) malloc(sizeof(char) * objectLength );
+                free(object_name);
+
+                fact[i] = object_name;
+                i++;
+            }
+
+            objectLength = 0;
+
         }
 
         
+    }
+
+    for(k = 0; k < 10; k++){
+        printf("%lu\n", sizeof(fact[k]) );
     }
 
     //Go back to the head
