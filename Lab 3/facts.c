@@ -1,250 +1,272 @@
-//Name 	 : Kim Yu Ng
+//Name   : Kim Yu Ng
 //CS ID  : kimyu92
 //UT EID : kn6254
 //Section: 53835
-//TA   	 : Ji Hong
-
-
+//TA     : Ji Hong
+ 
+ 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
-
+ 
 FILE *input;
 FILE *input2;
-
+ 
 typedef short Boolean;
 #define TRUE 1
 #define FALSE 0
-
+ 
 typedef char *String;
-
+ 
 char *arrStr;
 char **fact;
-
+ 
+//Functions scope
+void process();
 
 char *somehow_get_a_line();
-void process();
-// char *substr(const char *data_str, int pos_start, int pos_end);
-// void process_a_fact();
+char* deblank(char* input);
+
+void get_a_fact(String thisString);
+char *substr(const char *data_str, int pos_start, int pos_end);
 //================================
 //End of Declaration
 //================================
-
-
+ 
+ 
 int main(int   argc, char **argv){
-	Boolean hasFile = FALSE;
+    Boolean hasFile = FALSE;
     String extension = strrchr(*argv, '.');
-	/* main driver program.  Define the input file
+    /* main driver program.  Define the input file
        from either standard input or a name on the
-       command line.  Process all arguments. 
+       command line.  Process all arguments.
     */
-
+ 
     while (argc > 1 && !hasFile){
-
-    	argc--, 
-    	argv++;
-
+ 
+        argc--,
+        argv++;
+ 
         if (!extension){
             printf ("Please feed in .fax file\n");
             hasFile == FALSE;
         }
         else{
             printf("Thanks for feeding in with the extension of %s\n", extension + 1);
-            
+             
             input = fopen(*argv,"r");
-
+ 
             argc--;
             argv++;
-
+ 
             input2 = fopen(*argv,"r");
-            
-
+             
+ 
             if(input2 != NULL){
                 //Check the file extension
                 if ( (strrchr(*argv, '.') + 1)[0]== 'q' ){
                     hasFile = TRUE;
                     printf("This is the q file\n");
-
+ 
                     process();
-
-
+ 
+ 
                     fclose(input);
                     fclose(input2);
                 }
-                
-
-            	
+                 
+ 
+                 
             }
             else
-                printf("Please feed me the stdin/ second file\n");
-            
-
+                printf("Please feed me the stdin/ second file\n\n");
+             
+ 
         }
-
-
-
-        
+ 
+ 
+ 
+         
     }
-
-
+ 
+ 
     exit(0);
 }
 
 
+//Main Process
+void process(){
+    //Get a line
+    somehow_get_a_line();
+
+    //From a line start to process
+    //get_a_fact();
+}
+
+
+//Getting a string
 char *somehow_get_a_line(){
     int aByte;
-
+ 
     Boolean theStartIsF = FALSE;
     Boolean countedTheLine = TRUE;
-    
+     
     int charInLine = 0;
     int maxCharInLine = 0;
 
-    int i = 0;
-    int col = 0;
-    int objectLength = 0;
-
-    //Testing
-    int k = 0;
-
-    String thisString;
-    String object_name;
-
-
-    //first time instantiate
-    fact = (char**) malloc(sizeof(char*) * 10 );
-
-    //To get the inner column
-    for(col = 0; col < 10 ; col++)
-        fact[col] = (char*) malloc(sizeof(char) * 10);
-
+ 
+    
+ 
     while ( (aByte = fgetc(input)) != EOF){
-
+ 
         //Switch on before a line
         if(aByte == 'F')
             theStartIsF = TRUE;
-
+ 
         //Count for the maximum line
         if(theStartIsF && aByte != '\n')
             charInLine++;
-
+ 
         //Switch of the if statement down there
         if(aByte == ':')
             countedTheLine = FALSE;
 
-        //Get the object name
-        if (theStartIsF && countedTheLine && aByte != ' '){
-            objectLength++;
-        }
-
         //Switch off after a line
         if(aByte == '\n'){
             theStartIsF = FALSE;
-
+ 
             //Find the longest length amongs the line
             if(charInLine > maxCharInLine)
                 maxCharInLine = charInLine;
-
+ 
             charInLine = 0;
-
-            if(objectLength > 0){
-                objectLength +=1;
-                object_name = (char*) malloc(sizeof(char) * objectLength );
-                free(object_name);
-
-                fact[i] = object_name;
-                i++;
-            }
-
-            objectLength = 0;
-
+ 
         }
-
-        
+ 
+         
     }
-
-    for(k = 0; k < 10; k++){
-        printf("%lu\n", sizeof(fact[k]) );
-    }
-
+ 
     //Go back to the head
     rewind(input);
     printf("This is whatever size %d\n", maxCharInLine);
-
+    printf("============================\n\n");
+ 
     //Allocate memory for fgets
-    arrStr = (char*) malloc(sizeof(char) * maxCharInLine + 1);
+    arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
     free(arrStr);
 
-    
+     
     //Go again my size
-    while ( (thisString = fgets(arrStr, maxCharInLine, input)) != '\0'){
-        printf("%s\n", thisString);
+    while ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
+
+        //Skip a blank line
+        if(arrStr[0] != '\n' ){
+            printf("This is before     : %s\n", arrStr);                           //Debugging
+
+            //Cutting down the string
+            arrStr = deblank(arrStr);
+        
+            printf("What is the truncated: %s\n", arrStr);                         //Debugging
+
+            //Getting the fact
+            get_a_fact(arrStr);
+        }
+
     }
 
 
-    // if ( (thisString = fgets(arrStr, maxCharInLine, input)) != NULL ){
-    //     printf("DDDD   \n");
-    // }
-
-
-
-
-
-}
-
-//
-void process(){
-    somehow_get_a_line();
-
-
-
-
-
-
-
-
-
 }
 
 
-// char *substr(const char *data_str, int pos_start, int pos_end){
-//     char *res = malloc(sizeof(char) * /*?*/);
-//     memcpy(res, data_str * pos_start,     );
-
-
-//     return res;
-// }
-
-// void process_a_fact(){
-//     char *s = somehow_get_a_line();
-//     int len = strlen(s);
-//     int pos_colon = -1; pos_equ = -1;
-//     int i;
-
-//     if (s[0] != 'F')
-//         return;
-
-//     for (i = 0; i < len; i++){
-//         if (s[i] != ':'){
-//             pos_colon = i;
-//             break;
-//         }
-//     }
+//Cutdown the string
+char* deblank(char* input){
+    char *output = input;
+    int i = 0;
+    int j = 0;
     
-//     for (i = 0; i < len; i++){
-//         if (s[i] != '='){
-//             pos_equ = i;
-//             break;
-//         }
-//     }
+    while(i < strlen(input)){
+        if (input[i]!=' ')                           
+            output[j]=input[i];                     
+        else
+            j--;
 
-//     if (pos_colon == -1 || pos_equ = -1){
-//         return;
-//     }
+        i++;
+        j++;
+    }                           
+    
 
-//     char *object_name = substr(s, 2, pos_colon);
-//     char *property_name = substr(s, pos_colon + 2, pos_equ);
-//     char *object_name = substr(s, 2, pos_colon);
+    output[j] = 0;
 
-// }
+    return output;
+}
+
+
+
+
+void get_a_fact(String thisString){
+    char *s = thisString;
+    int len = strlen(s);
+
+    int pos_colon = -1;
+    int pos_equ = -1;
+    
+    int i;
+
+    char *object_name, *property_name, *value_name;
+
+
+    if (s[0] != 'F')
+        return;
+
+
+    for (i = 0; i < len; i++){
+        if (s[i] == ':'){
+            pos_colon = i;
+            break;
+        }
+    }
+     
+    for (i = 0; i < len; i++){
+        if (s[i] == '='){
+            pos_equ = i;
+            break;
+        }
+    }
+ 
+    if (pos_colon == -1 || pos_equ == -1){
+        return;
+    }
+
+    // printf("%d\n", pos_colon);
+    // printf("%d\n", pos_equ);
+    printf("Result: \n");                               //Debugging starts
+
+
+    object_name = substr(s, 1, pos_colon );
+    printf("%s\n", object_name);
+
+    property_name = substr(s, pos_colon + 1, pos_equ);
+    printf("%s\n", property_name);
+
+    value_name = substr(s, pos_equ + 1, len);
+    printf("%s\n\n", value_name);
+ 
+}
+
+
+//Fetch the data/value
+char *substr(const char *data_str, int pos_start, int pos_end){
+    int amount = pos_end - pos_start;
+    
+    //printf("HERE i am   \n");
+    char *res = (char*) malloc( (sizeof(char)) * (amount + 1) );
+    //printf("HERE i am v2  \n");
+
+    //printf("HERE i am v3  \n");
+    memcpy(res, data_str + pos_start, amount);
+    //printf("HERE i am v4  \n");
+
+
+    return res;
+}

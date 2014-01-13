@@ -1,0 +1,12 @@
+Thanks for feeding in with the extension of /facts
+This is the q file
+This is whatever size 30
+============================
+
+F CDC6600: word-size=60
+FCDC6600:word-size=60
+
+Result: 
+HERE i am   
+HERE i am v2  
+HERE i am v3  
