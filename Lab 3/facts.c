@@ -20,7 +20,8 @@ typedef short Boolean;
 typedef char *String;
  
 char *arrStr;
-char **fact;
+char *res;
+char ***fact;
  
 //Functions scope
 void process();
@@ -30,6 +31,9 @@ char* deblank(char* input);
 
 void get_a_fact(String thisString);
 char *substr(const char *data_str, int pos_start, int pos_end);
+
+void create_the_fact_array();
+void resize_the_fact_array();
 //================================
 //End of Declaration
 //================================
@@ -158,7 +162,7 @@ char *somehow_get_a_line(){
 
      
     //Go again my size
-    while ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
+    if ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
 
         //Skip a blank line
         if(arrStr[0] != '\n' ){
@@ -238,29 +242,40 @@ void get_a_fact(String thisString){
         return;
     }
 
+    //Instantiate array
+    create_the_fact_array();
+
+    
+
     // printf("%d\n", pos_colon);
     // printf("%d\n", pos_equ);
     printf("Result: \n");                               //Debugging starts
 
+    
 
+    //Grabbing each element
     object_name = substr(s, 1, pos_colon );
     printf("%s\n", object_name);
+    free(res);
 
     property_name = substr(s, pos_colon + 1, pos_equ);
     printf("%s\n", property_name);
+    free(res);
 
     value_name = substr(s, pos_equ + 1, len);
     printf("%s\n\n", value_name);
- 
+    free(res);
 }
 
 
+//Helper for get_a_fact
 //Fetch the data/value
 char *substr(const char *data_str, int pos_start, int pos_end){
     int amount = pos_end - pos_start;
     
     //printf("HERE i am   \n");
-    char *res = (char*) malloc( (sizeof(char)) * (amount + 1) );
+    //char *res = (char*) malloc( (sizeof(char)) * (amount + 1) );
+    res = (char*) malloc( (sizeof(char)) * (amount + 1) );
     //printf("HERE i am v2  \n");
 
     //printf("HERE i am v3  \n");
@@ -269,4 +284,42 @@ char *substr(const char *data_str, int pos_start, int pos_end){
 
 
     return res;
+}
+
+void create_the_fact_array(){
+    int obj_size = 5, prop_size = 10, value_size = 1;
+    int i;
+    int j;
+
+
+    fact = (char ***) malloc(obj_size * (sizeof(char **)) );
+    
+    //assert(fact != NULL);
+    
+    for (i = 0; i < obj_size; ++i){
+        fact[i] =(char **) malloc(prop_size * (sizeof(char *)) );
+        //assert(fact[i] != NULL);
+        
+        for (j = 0; j < prop_size; ++j){
+            fact[i][j] = (char*) malloc( (sizeof(char)) * value_size);
+            free(fact[i][j]);
+
+            //assert(fact[i][j] != NULL);
+        }
+
+        free(fact[i]);
+
+    }
+
+    free(fact);
+    printf("This is shit\n");
+    
+}
+
+
+void resize_the_fact_array(){
+
+
+
+
 }
