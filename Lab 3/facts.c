@@ -19,7 +19,8 @@ typedef short Boolean;
 typedef char *String;
 
 
-// char *somehow_get_a_line();
+char *somehow_get_a_line();
+void process();
 // char *substr(const char *data_str, int pos_start, int pos_end);
 // void process_a_fact();
 //================================
@@ -56,11 +57,13 @@ int main(int   argc, char **argv){
             
 
             if(input2 != NULL){
-
                 //Check the file extension
-                if ( (strrchr(*argv, '.') + 1)[0] == 'q' ){
+                if ( (strrchr(*argv, '.') + 1)[0]== 'q' ){
                     hasFile = TRUE;
                     printf("This is the q file\n");
+
+                    process();
+
 
                     fclose(input);
                     fclose(input2);
@@ -84,9 +87,37 @@ int main(int   argc, char **argv){
     exit(0);
 }
 
-// char *somehow_get_a_line(){
+char *somehow_get_a_line(){
+    int aByte;
 
-// }
+    while ( (aByte = fgetc(input)) != EOF){
+
+        //Find the F
+        if(aByte != 'F' && aByte != ' '){
+            printf("Tlalalalalalal      %c \n", aByte);
+        }
+    }
+
+
+
+
+
+}
+
+//
+void process(){
+    somehow_get_a_line();
+
+
+
+
+
+
+
+
+
+}
+
 
 // char *substr(const char *data_str, int pos_start, int pos_end){
 //     char *res = malloc(sizeof(char) * /*?*/);
