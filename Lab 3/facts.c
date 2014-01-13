@@ -39,6 +39,8 @@ char *substr(const char *data_str, int pos_start, int pos_end);
 //Search the linkedlist and update
 void search_in_linkedlist();
 
+//Update the value
+void update_value(String object_name, String property_name, String value_name);
 //==================================
 //End of Declaration without struct
 //==================================
@@ -84,19 +86,19 @@ int main(int argc, char **argv){
         else{
             printf("Thanks for feeding in with the extension of %s\n", extension + 1);
              
-            input = fopen(argv[1],"r");
+            input = fopen(*argv,"r");
  
-            // argc--;
-            // argv++;
+            argc--;
+            argv++;
  
-            input2 = fopen(argv[2],"r");
+            input2 = fopen(*argv,"r");
             x = getc(input2);
             printf(" yeaa  \n");
             printf("%c\n", x);
  
             if(input2 != NULL){
                 //Check the file extension
-                if ( (strrchr(argv[2], '.') + 1)[0]== 'q' ){
+                if ( (strrchr(*argv, '.') + 1)[0]== 'q' ){
                     hasFile = TRUE;
                     printf("This is the q file\n");
  
@@ -179,7 +181,7 @@ char *somehow_process_q_line(){
     arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
      
     //Go again my size
-    while ( (fgets(arrStr, (maxCharInLine + 1), input2)) != NULL ){
+    if( (fgets(arrStr, (maxCharInLine + 1), input2)) != NULL ){
 
         //Skip a blank line
         if(arrStr[0] != '\n' ){
@@ -251,6 +253,7 @@ void get_the_question(String thisString){
     addNode(temp);
     free(res);
     free(temp);
+
 }
 
 
@@ -390,26 +393,44 @@ void get_a_fact(String thisString){
 
     //Grabbing each element
     object_name = substr(s, 1, pos_colon);    
-    temp->object_data = object_name;
+    //temp->object_data = object_name;
     printf("%s\n", object_name);
 
 
     property_name = substr(s, pos_colon + 1, pos_equ);
-    temp->property_data = property_name;
+    //temp->property_data = property_name;
     printf("%s\n", property_name);
 
 
     value_name = substr(s, pos_equ + 1, len);
-    temp->value_data = value_name;
+    //temp->value_data = value_name;
     printf("%s\n\n", value_name);
     //free(res);
 
-    addNode(temp);
+    //addNode(temp);
+    update_value(object_name, property_name, value_name);
+
     free(res);
-    free(temp);
+    //free(temp);
 }
 
 
+
+//Update the value
+void update_value(String object_name, String property_name, String value_name){
+
+    ListNode *temptemp = root;
+    printf("Infinite loop    \n");
+    if(temptemp->next != NULL){
+        printf("%s\n", temptemp->object_data);
+        printf("%s\n", temptemp->property_data);
+        printf("%s\n", temptemp->value_data);
+        if( strcmp(temptemp->object_data, object_name) == 0 )
+            if( strcmp(temptemp->property_data, property_name) == 0 )
+                temptemp->value_data = value_name;
+    }
+
+}
 
 //Print of linkedlist
 void display(struct ListNode *r){
@@ -433,15 +454,16 @@ void display(struct ListNode *r){
 
 
 
-void addNode(struct ListNode *temp){
+void addNode(struct ListNode *newNode){
     
-    ListNode *newNode = (ListNode*) malloc(sizeof(ListNode));
+    ListNode *temptemp = (ListNode*) malloc(sizeof(ListNode));
 
-    newNode->object_data = temp->object_data;
-    newNode->property_data = temp->property_data;
-    newNode->value_data = temp->value_data;
-    temp->next = NULL;
-    
+    // newNode->object_data = temp->object_data;
+    // newNode->property_data = temp->property_data;
+    // newNode->value_data = temp->value_data;
+    newNode->next = NULL;
+
+
     
     if (root == NULL){
         root = newNode;
@@ -453,10 +475,37 @@ void addNode(struct ListNode *temp){
             temptemp = temptemp->next;
         
         temptemp->next = newNode;
+
+        //temptemp->next->next = NULL;
     }
 
-    display(root);
+    //display(root);
 }
+
+// void addNode(struct ListNode *temp){
+     
+//     ListNode *newNode = (ListNode*) malloc(sizeof(ListNode));
+ 
+//     newNode->object_data = temp->object_data;
+//     newNode->property_data = temp->property_data;
+//     newNode->value_data = temp->value_data;
+//     temp->next = NULL;
+     
+     
+//     if (root == NULL){
+//         root = newNode;
+//     }
+//     else{
+//         ListNode *temptemp = root;
+         
+//         while(temptemp->next != NULL)
+//             temptemp = temptemp->next;
+         
+//         temptemp->next = newNode;
+//     }
+ 
+//     display(root);
+// }
 
 
 
@@ -470,14 +519,4 @@ char *substr(const char *data_str, int pos_start, int pos_end){
     memcpy(res, data_str + pos_start, amount);
 
     return res;
-}
-
-
-
-//Search the object name and update the value
-void search_in_linkedlist(){
-
-
-
-
 }
