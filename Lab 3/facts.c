@@ -83,7 +83,8 @@ void display(ListNode *r);
 void addNode(ListNode *temp);
 
 void result(ListNode *r);
-void freeMemNodes();
+void freeMemNodes(ListNode *ptr);
+void freeList(ListNode *head);
 
 //==================================
 //End of Declaration of struct
@@ -153,28 +154,39 @@ void process(){
     //freeMemNodes();
 
     //free(newNode);
-    free(temp);
+    //free(temp);
+    //freeList(temp);
+
     //free(arrStr);
+
     //free(res);
 }
 
-void freeMemNodes(){
-    clearTemp = NULL;
+void freeMemNodes(ListNode * ptr){
 
     if(root == NULL)
         return;
 
-    clearTemp = root;
+    clearTemp = ptr;
 
-    while(root){
-        clearTemp = root->next;
+    while(clearTemp != NULL){
 
-        free(root);
+        ListNode *temp = ptr->next;
+        
+        free(clearTemp);
 
-        root = clearTemp;
+        clearTemp = temp;
     }
+}
 
-    //free(temp1);
+void freeList(ListNode *head){
+   ListNode *tmp;
+
+   while (head != NULL){
+       tmp = head;
+       head = head->next;
+       free(tmp);
+    }
 }
 
 char *somehow_process_q_line(){
@@ -246,11 +258,10 @@ char *somehow_process_q_line(){
 
             //Getting the fact
             get_the_question(arrStr);
-
+            
         }
 
     }
-
     free(arrStr);
 }
 
@@ -312,6 +323,8 @@ void get_the_question(String thisString){
 
 
     addNode(temp);
+    freeList(temp);
+    //freeMemNodes(newNode);
     //free(res);
     //free(temp);
 
@@ -590,6 +603,7 @@ void update_value(String object_name, String property_name, String value_name){
 //Helper for get_a_fact
 //Fetch the data / value
 char *substr(const char *data_str, int pos_start, int pos_end){
+
     int amount = pos_end - pos_start;
 
     res = (char*) malloc( (sizeof(char)) * (amount+1) );
