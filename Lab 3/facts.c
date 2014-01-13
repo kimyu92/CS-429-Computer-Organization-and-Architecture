@@ -141,6 +141,8 @@ char *somehow_process_q_line(){
     int charInLine = 0;
     int maxCharInLine = 0;
 
+    //Buggy while loop
+    //Super buggySSSSSSS
 
     //Read byte by byte to get the length of longest line 
     while ( (aByte = fgetc(input2)) != EOF){
@@ -150,7 +152,7 @@ char *somehow_process_q_line(){
             theStartIsF = TRUE;
  
         //Count for the maximum line
-        if(theStartIsF && aByte != '\n')
+        if(theStartIsF && (aByte != '\n') )
             charInLine++;
  
         //Switch of the if statement down there
@@ -181,7 +183,7 @@ char *somehow_process_q_line(){
     arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
      
     //Go again my size
-    if( (fgets(arrStr, (maxCharInLine + 1), input2)) != NULL ){
+    while( (fgets(arrStr, (maxCharInLine + 1), input2)) != NULL ){
 
         //Skip a blank line
         if(arrStr[0] != '\n' ){
@@ -216,20 +218,18 @@ void get_the_question(String thisString){
     if (s[0] != 'Q')
         return;
 
-    for (i = 0; i < len; i++){
+    for (i = 0; i < len; i++)
         if (s[i] == ':'){
             pos_colon = i;
             break;
         }
-    }
-
+    
 
     if (pos_colon == -1)
         return;
 
 
     printf("Result of question: \n");                               //Debugging starts
-
     
     ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
 
@@ -239,20 +239,22 @@ void get_the_question(String thisString){
     printf("%s\n", object_name);
 
 
-    property_name = substr(s, pos_colon + 1, len -1 );
+    property_name = substr(s, pos_colon + 1, len-1);
     temp->property_data = property_name;
     printf("%s\n", property_name);
 
 
     value_name = (char *) malloc( (sizeof(char)) * 8 );
     value_name = (String) "unknown";
+    printf("%s\n", property_name);
+
     temp->value_data = value_name;
     printf("%s\n\n", value_name);
-    //free(res);
+
 
     addNode(temp);
-    free(res);
-    free(temp);
+    //free(res);
+    //free(temp);
 
 }
 
@@ -367,24 +369,23 @@ void get_a_fact(String thisString){
     if (s[0] != 'F')
         return;
 
-    for (i = 0; i < len; i++){
+    for (i = 0; i < len; i++)
         if (s[i] == ':'){
             pos_colon = i;
             break;
         }
-    }
+    
      
-    for (i = 0; i < len; i++){
+    for (i = 0; i < len; i++)
         if (s[i] == '='){
             pos_equ = i;
             break;
         }
-    }
+    
  
-    if (pos_colon == -1 || pos_equ == -1){
+    if (pos_colon == -1 || pos_equ == -1)
         return;
-    }
-
+    
 
     printf("Result: \n");                               //Debugging starts
 
@@ -393,49 +394,54 @@ void get_a_fact(String thisString){
 
     //Grabbing each element
     object_name = substr(s, 1, pos_colon);    
-    //temp->object_data = object_name;
     printf("%s\n", object_name);
 
 
     property_name = substr(s, pos_colon + 1, pos_equ);
-    //temp->property_data = property_name;
     printf("%s\n", property_name);
 
 
     value_name = substr(s, pos_equ + 1, len);
-    //temp->value_data = value_name;
     printf("%s\n\n", value_name);
-    //free(res);
 
-    //addNode(temp);
     update_value(object_name, property_name, value_name);
 
-    free(res);
+    //free(res);
     //free(temp);
 }
 
 
 
-//Update the value
-void update_value(String object_name, String property_name, String value_name){
+void addNode(struct ListNode *temp){
+     
+    ListNode *newNode = (ListNode*) malloc(sizeof(ListNode));
+ 
+    newNode->object_data = temp->object_data;
+    newNode->property_data = temp->property_data;
+    newNode->value_data = temp->value_data;
+    temp->next = NULL;
+     
 
-    ListNode *temptemp = root;
-    printf("Infinite loop    \n");
-    if(temptemp->next != NULL){
-        printf("%s\n", temptemp->object_data);
-        printf("%s\n", temptemp->property_data);
-        printf("%s\n", temptemp->value_data);
-        if( strcmp(temptemp->object_data, object_name) == 0 )
-            if( strcmp(temptemp->property_data, property_name) == 0 )
-                temptemp->value_data = value_name;
+    if (root == NULL)
+        root = newNode;
+    else{
+        ListNode *temptemp = root;
+         
+        while(temptemp->next != NULL)
+            temptemp = temptemp->next;
+         
+        temptemp->next = newNode;
     }
-
+ 
+    display(root);
 }
+
+
 
 //Print of linkedlist
 void display(struct ListNode *r){
     int i  = 0; 
-    r = root;
+    //r = root;
     if(r == NULL)
         return;
     
@@ -452,61 +458,21 @@ void display(struct ListNode *r){
     printf("\n");
 }
 
+//Update the value
+void update_value(String object_name, String property_name, String value_name){
 
-
-void addNode(struct ListNode *newNode){
-    
-    ListNode *temptemp = (ListNode*) malloc(sizeof(ListNode));
-
-    // newNode->object_data = temp->object_data;
-    // newNode->property_data = temp->property_data;
-    // newNode->value_data = temp->value_data;
-    newNode->next = NULL;
-
-
-    
-    if (root == NULL){
-        root = newNode;
-    }
-    else{
-        ListNode *temptemp = root;
-        
-        while(temptemp->next != NULL)
-            temptemp = temptemp->next;
-        
-        temptemp->next = newNode;
-
-        //temptemp->next->next = NULL;
+    ListNode *temptemp = root;
+    printf("Infinite loop    \n");
+    if(temptemp->next != NULL){
+        printf("%s\n", temptemp->object_data);
+        printf("%s\n", temptemp->property_data);
+        printf("%s\n", temptemp->value_data);
+        if( strcmp(temptemp->object_data, object_name) == 0 )
+            if( strcmp(temptemp->property_data, property_name) == 0 )
+                temptemp->value_data = value_name;
     }
 
-    //display(root);
 }
-
-// void addNode(struct ListNode *temp){
-     
-//     ListNode *newNode = (ListNode*) malloc(sizeof(ListNode));
- 
-//     newNode->object_data = temp->object_data;
-//     newNode->property_data = temp->property_data;
-//     newNode->value_data = temp->value_data;
-//     temp->next = NULL;
-     
-     
-//     if (root == NULL){
-//         root = newNode;
-//     }
-//     else{
-//         ListNode *temptemp = root;
-         
-//         while(temptemp->next != NULL)
-//             temptemp = temptemp->next;
-         
-//         temptemp->next = newNode;
-//     }
- 
-//     display(root);
-// }
-
 
 
 //Helper for get_a_fact
