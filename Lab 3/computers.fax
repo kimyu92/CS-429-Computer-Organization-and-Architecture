@@ -1,0 +1,18 @@
+F CDC6600: word-size=60
+F CDC6600: address-size=18
+F CDC6600: number_registers=24
+F CDC6600: opcode_bits=6
+F CDC6600: character_set=BCD
+
+F PDP11: word-size=16
+F PDP11: address-size=16
+F PDP11: number_registers=8
+F PDP11: opcode_bits=4,8,10
+F PDP11: character_set=ASCII
+
+F IBM360: word-size=32
+F IBM360: address-size=24
+F IBM360: number_registers=16
+F IBM360: opcode_bits=8
+F IBM360: character_set=EBCDIC
+
