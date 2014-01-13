@@ -90,8 +90,8 @@ void display(struct ListNode *r){
 void testing_linkedlist(){
     //struct ListNode *temp;
 
-    root = (struct ListNode*)malloc(sizeof(struct ListNode));
-    temp = (struct ListNode*)malloc(sizeof(struct ListNode));
+    //root = (struct ListNode*)malloc(sizeof(struct ListNode));
+    //temp = (struct ListNode*)malloc(sizeof(struct ListNode));
     
 
     // temp->object_data = "A";
@@ -159,13 +159,8 @@ int main(int argc, char **argv){
             }
             else
                 printf("Please feed me the stdin/ second file\n\n");
-             
- 
         }
- 
- 
- 
-         
+
     }
  
  
@@ -250,6 +245,8 @@ char *somehow_get_a_line(){
             printf("What is the truncated: %s\n", arrStr);                         //Debugging
 
             //Getting the fact
+            temp = (struct ListNode*)malloc(sizeof(struct ListNode));
+
             get_a_fact(arrStr);
         }
 
@@ -272,6 +269,24 @@ char *somehow_get_a_line(){
         }
 
     }
+
+    // if ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
+
+    //     //Skip a blank line
+    //     if(arrStr[0] != '\n' ){
+
+    //         printf("This is before     : %s\n", arrStr);                           //Debugging
+
+    //         //Cutting down the string
+    //         arrStr = deblank(arrStr);
+        
+    //         printf("What is the truncated: %s\n", arrStr);                         //Debugging
+
+    //         //Getting the fact
+    //         get_a_fact(arrStr);
+    //     }
+
+    // }
 
 
 }
@@ -377,6 +392,9 @@ void get_a_fact(String thisString){
 void addNode(struct ListNode *temp){
     struct ListNode *temptemp;
 
+    printf("TTTTT   \n");
+    //temptemp = (struct ListNode*)malloc(sizeof(struct ListNode));
+    printf("TTTTT   \n");
     if (root == NULL){
         root = temp;
         root->next = NULL;
@@ -391,11 +409,13 @@ void addNode(struct ListNode *temp){
         temp->next = NULL;
 
         
-        root = temp;
+        //root = temptemp;
+
+        //display(temptemp);
 
     }
 
-    display(temp);
+    display(root);
 }
 
 
