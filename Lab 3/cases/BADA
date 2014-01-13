@@ -1,0 +1,4 @@
+F PDP11: number_registers=unknown
+F CDC6600: number_registers=unknown
+F IBM360: opcode_bits=unknown
+F ARM: number_registers=unknown

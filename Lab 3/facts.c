@@ -3,514 +3,506 @@
 //UT EID : kn6254
 //Section: 53835
 //TA     : Ji Hong
- 
- 
+
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
- 
-FILE *input;
+#include <string.h>
+
+FILE *input1;
 FILE *input2;
- 
+
 typedef short Boolean;
 #define TRUE 1
 #define FALSE 0
- 
-typedef char *String;
 
+#define FACT F
+#define QUEST Q
 
-//Functions scope
-void process();
+typedef char *STRING;
 
-//Grab String
-String somehow_process_q_line();
-String somehow_get_a_line();
-String deblank(String input);
-String de_backslah_n(String cutphrase);
-
-//Get fact and store them
-void get_the_question(String thisString);
-void get_a_fact(String thisString);
-
-//Update the value
-void update_value(String object_name, String property_name, String value_name);
-//==================================
-//End of Declaration without struct
-//==================================
-
-
-//Struct of ListNode
-typedef struct ListNode{
-    String object_data;
-    String property_data;
-    String value_data;  
+typedef struct questInfo{
+    STRING object_data;
+    STRING property_data;
+    STRING value_data;
     
-    //The next node
-    struct ListNode *next;
+    struct questInfo *nextNode;
 }ListNode;
 
-//Memory-related variables
+static int aByte = (sizeof(char));
+
+//Root Node for question file
+//Root Node for fact file
 ListNode *root = NULL;
-//ListNode *temp = NULL;
+ListNode *root2 = NULL;
 
-//For the get_the_question or get_a_fact methods
+////Functions scopes
+static int decision(FILE *in1, FILE *in2);
 
+//Parsing
+//Parsing and Storing linked list
+void parseFactFile();
+void parseQuestFile(STRING question, int posQ, int posCol);
 
-//For the deblank
-char *output;
+//Parsing
+//Parsing and Storing linked list
+void getFromQFile();
+void getFacts(STRING line, int posF,int posCol,int posEqual);
 
+//Update the value by checking linked list
+//Print out the result
+void updateValue();
 
-//Method prototype from strct
-void display(ListNode *r);
-void addNode(ListNode *adding);
-
-void result(ListNode *r);
-void freeMemNodes(ListNode *ptr);
-void freeList(ListNode *head);
+//Free the linkedlist
+void freeLinkedList(ListNode *passedNode);
 
 //==================================
-//End of Declaration of struct
+//End of Declaration
 //==================================
 
 
 
+//Main Method
 int main(int argc, char **argv){
-    Boolean hasFile = FALSE;
-    String extension = strrchr(*argv, '.');
-    /* main driver program.  Define the input file
-       from either standard input or a name on the
-       command line.  Process all arguments.
-    */
-
-    while (argc > 1 && !hasFile){
-
-        if (!extension){
-            //printf ("Please feed in .fax file\n");
-            hasFile == FALSE;
-        }
-        else{
-            //printf("Thanks for feeding in with the extension of %s\n", extension + 1);
-             
-            input = fopen(*argv,"r");
  
-            argc--;
-            argv++;
- 
-            input2 = fopen(*argv,"r");
-            //printf(" yeaa  \n");
- 
-            if(input2 != NULL){
-                //Check the file extension
-                if ( (strrchr(*argv, '.') + 1)[0]== 'q' ){
-                    hasFile = TRUE;
-                    //printf("This is the q file\n");
- 
-                    process();
- 
-                    fclose(input);
-                    fclose(input2);
-                }
-                 
- 
-                 
-            }
-            else{
-                //printf("Please feed me the stdin/ second file\n\n");
-                input2 = stdin;
-            }
-        }
-
-    }
- 
- 
-    exit(0);
-}
-
-void result(ListNode *r){
-    if(r == NULL)
-        return;
+   while(argc > 1){
+    argc --;
+    argv ++;
     
-    while(r != NULL){
-        printf("F %s:",r->object_data);
-        printf(" %s=",r->property_data);
-        printf("%s\n",r->value_data);
-        r=r->next;
-
-    }
-}
-
-//Main Process
-void process(){
-    //Get a line
-    somehow_process_q_line();
-    somehow_get_a_line();
-    result(root);
-}
-
-
-void freeList(ListNode *head){
-   ListNode *tmp;
-
-   while (head != NULL){
-       tmp = head;
-       head = head->next;
-
-       free(tmp);
-    }
-}
-
-String somehow_process_q_line(){
-    int aByte;
- 
-    Boolean theStartIsQ = FALSE;
-    Boolean countedTheLine = TRUE;
-     
-    int charInLine = 0;
-    int maxCharInLine = 0;
-
-    //Read byte by byte to get the length of longest line 
-    while ( (aByte = fgetc(input2)) != EOF){
- 
-        //Switch on before a line
-        if(aByte == 'Q')
-            theStartIsQ = TRUE;
- 
-        //Count for the maximum line
-        if(theStartIsQ && aByte != '\n')
-            charInLine++;
- 
-        //Switch of the if statement down there
-        if(aByte == ':')
-            countedTheLine = FALSE;
-
-        //Switch off after a line
-        if(aByte == '\n'){
-            theStartIsQ = FALSE;
- 
-            //Find the longest length amongs the line
-            if(charInLine > maxCharInLine)
-                maxCharInLine = charInLine;
- 
-            charInLine = 0;
- 
-        }    
-    }
-
-    if(maxCharInLine == 0 && (charInLine != 0) )
-        maxCharInLine = charInLine;
-
-
-    //Go back to the head
-    rewind(input2);
- 
-    //Allocate memory for fgets
-    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 2) );
-     
-    //Go again my size
-    while( (fgets(arrStr, (maxCharInLine + 2), input2)) != NULL ){
-
-        //Skip a blank line
-        if(arrStr[0] != '\n' ){
-
-            //Cutting down the string
-            arrStr = deblank(arrStr);
-        
-            //Getting the fact
-            get_the_question(arrStr);
-        }
-
-    }
-    free(arrStr);
-    arrStr = NULL;
-}
-
-
-
-void get_the_question(String s){
-    ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
-    int len = strlen(s);
-    int pos_colon = -1;
+    input1 = fopen(*argv,"r");
+    argc--;
+    argv++;
     
-    int i;
-    int j;
+    input2 = fopen(*argv,"r");
 
-    int amount;
-
-
-    if (s[0] != 'Q')
-        return;
-
-    for (i = 0; i < len; i++)
-        if (s[i] == ':'){
-            pos_colon = i;
+    switch( decision(input1, input2) ){
+        case 0:
+            fprintf(stderr, "Both files %s , %s couldnt be read. Sorry. \n",argv[1],argv[2] );
+            return 0;
             break;
-        }
-    
+        case 1:
+            getFromQFile();
+            updateValue();
 
-    if (pos_colon == -1)
-        return;
+            freeLinkedList(root);
+            freeLinkedList(root2);
 
-    //Grabbing each element
-    temp->object_data = (char*) malloc( (sizeof(char)) * (pos_colon) );
-    amount = pos_colon - 1;
-    strncpy(temp->object_data, s + 1, amount);
-    temp->object_data = de_backslah_n(temp->object_data);
+            fclose(input2);
+            return 0;
+            break;
+        case 2:
+            getFromQFile();
+      
+            parseFactFile();
+            updateValue();
+      
+            freeLinkedList(root);
+            freeLinkedList(root2);
+      
+            fclose(input1);
+            fclose(input2);
+            return 0;
+            break;
+        default:
+            input2 = stdin;
+            getFromQFile();
+      
+            parseFactFile();
+            updateValue();
+      
+            freeLinkedList(root);
+            freeLinkedList(root2);
+       
+            fclose(input1);
+            return 0;
+            break;
+    }
+  }
+  
+  return 0;
+}
 
-    
 
-    temp->property_data = (char*) malloc( (sizeof(char)) * (len - pos_colon) );
-    amount = len - (pos_colon + 1);
-    strncpy(temp->property_data, s + (pos_colon + 1), amount);
-    temp->property_data = de_backslah_n(temp->property_data);
+static int decision(FILE* in1, FILE* in2){
+
+    if(in1 == NULL && in2 == NULL)
+        return 0;
+    else if(in1==NULL && in2 != NULL)
+        return 1;
+    else if(in1 != NULL && in2 != NULL)
+        return 2;
+    else
+        return 3;
+} 
 
 
-    temp->value_data = (char*) malloc( (sizeof(char)) * (8) );
-    strcpy(temp->value_data, "unknown"); 
-
-
-    addNode(temp);
-
+//Free the linkedlist
+void freeLinkedList(ListNode *passedNode){
+ 
+  ListNode *temp;
+ 
+  while(passedNode){
+    //Swaping
+    //Grab the current node
+    //Move to next node
+    temp = passedNode;
+    passedNode = temp->nextNode;
+ 
     free(temp->object_data);
     free(temp->property_data);
     free(temp->value_data);
+    
     free(temp);
+  }
 
 }
 
 
-//Getting a string
-String somehow_get_a_line(){
-    int aByte;
- 
-    Boolean theStartIsF = FALSE;
-    Boolean countedTheLine = TRUE;
-     
-    int charInLine = 0;
-    int maxCharInLine = 0;
 
+void getFromQFile(){
+    
+    Boolean checkEndLine = FALSE, endFile = FALSE;
+    
+    int findQ = -1, findColon = -1, count = 0, i;
+    
+    STRING arrString;
+    char letter;
 
-    //Read byte by byte to get the length of longest line 
-    while ( (aByte = fgetc(input)) != EOF){
- 
-        //Switch on before a line
-        if(aByte == 'F')
-            theStartIsF = TRUE;
- 
-        //Count for the maximum line
-        if(theStartIsF && aByte != '\n')
-            charInLine++;
- 
-        //Switch of the if statement down there
-        if(aByte == ':')
-            countedTheLine = FALSE;
+    while(!endFile){
+        letter = fgetc(input2);
 
-        //Switch off after a line
-        if(aByte == '\n'){
-            theStartIsF = FALSE;
- 
-            //Find the longest length amongs the line
-            if(charInLine > maxCharInLine)
-                maxCharInLine = charInLine;
- 
-            charInLine = 0;
- 
+        if(letter == EOF)
+            endFile = TRUE;
+
+        if(!endFile){
+
+            if(letter!= '\n')
+                count++;
+
+            if(count == 1 && letter == 'Q' && findQ == -1){
+                findQ = count-1;
+                arrString = (STRING)malloc( aByte );
+            }
+
+            if(letter == '\n')
+                checkEndLine = TRUE;
+
+            if(letter == ':' && findColon < 0)
+                findColon = count-1;
+
+            if(findQ != -1 && letter != '\n'){
+
+                if(count > strlen(arrString) )
+                    arrString = (STRING)realloc(arrString, (count + 1) * aByte );
+
+                arrString[count-1] = letter;
+            }
         }
- 
-         
+
+        if(checkEndLine || endFile){
+
+            if(findQ != -1 && findColon != -1){
+
+                arrString = (STRING)realloc(arrString, (count + 1) * aByte );
+                arrString[count]='\0';
+
+                parseQuestFile(arrString,findQ,findColon);
+            }
+
+            if(findQ != -1)
+                free(arrString);
+
+            if(checkEndLine){
+                findQ = -1;
+                findColon = -1;
+                checkEndLine = FALSE;
+                count = 0;
+            }
+        }
+    }
+}
+
+
+//Process the question file
+//Parse the question file
+//Store inside the ListNode and chained up as a linkedlist
+void parseQuestFile(STRING question, int posQ, int posCol){
+    Boolean check = FALSE;
+
+    int i =0;
+    int afterQ = posQ + 1;
+
+    int beforeCol = posCol - 1;
+    int afterCol = posCol + 1;
+
+    int endBack = strlen(question) - 1;
+
+    //Position
+    int objBeg = -1, objEnd = -1, propBeg = -1, propEnd = -1;
+
+    STRING unknown = (STRING) "unknown";
+
+    while(!check){
+
+        if(objBeg < 0 && question[afterQ] != ' ' )
+            objBeg = afterQ;
+
+        if(objEnd < 0 && question[beforeCol] != ' ' ) 
+            objEnd = beforeCol;
+        if(propBeg < 0 && question[afterCol] != ' ' )
+            propBeg = afterCol;
+        if(propEnd < 0 && question[endBack] != ' ' )
+            propEnd = endBack;
+
+        if(objBeg > 0 && objEnd > 0 && propBeg > 0 && propEnd > 0)
+            check = TRUE;
+
+        afterQ++;
+        beforeCol--;
+        afterCol++;
+        endBack--;
     }
 
-    if(maxCharInLine == 0 && (charInLine != 0) )
-        maxCharInLine = charInLine;
- 
-    //Go back to the head
-    rewind(input);
+    //Adding the node
+    //The head is null
+    //Otherwise
+    if(root == NULL){
 
- 
-    //Allocate memory for fgets
-    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 2) );
-     
-    //Go again my size
-    while ( (fgets(arrStr, (maxCharInLine + 2), input)) != NULL ){
-
-        //Skip a blank line
-        if(arrStr[0] != '\n' ){
-
-            //Cutting down the string
-            arrStr = deblank(arrStr);
-
-            //Getting the fact
-            get_a_fact(arrStr);
-        }
-
-    }
-
-    free(arrStr);
-    arrStr = NULL;
-}
-
-
-
-//Cutdown the string
-String deblank(char* input){
-    //char *output = input;
-    int i = 0;
-    int j = 0;
-
-    output = input;
+        root = (ListNode*) malloc(sizeof(ListNode) * aByte);
+        root->object_data = (STRING) malloc( (objEnd - objBeg + 1) * aByte );
+        root->property_data = (STRING) malloc( (propEnd - propBeg + 1) * aByte );
+        root->value_data = (STRING) malloc( strlen(unknown) * aByte );
     
-    while(i < strlen(input)){
-        if (input[i]!=' ')                           
-            output[j]=input[i];                     
-        else
-            j--;
+        //Set the next node to null to prevent infinite loop
+        root->nextNode = NULL;
 
-        i++;
-        j++;
-    }                           
-    
-    output[j] = 0;
-
-    return output;
-}
-
-
-
-void get_a_fact(String s){
-    String object_name;
-    String property_name;
-    String value_name;
-
-    ListNode *temptemp; 
-
-    int len = strlen(s);
-
-    int pos_colon = -1;
-    int pos_equ = -1;
-    
-    int i;
-    int j;
-    int amount;
-
-    if (s[0] != 'F')
-        return;
-
-    for (i = 0; i < len; i++)
-        if (s[i] == ':'){
-            pos_colon = i;
-            break;
-        }
-    
-     
-    for (i = 0; i < len; i++)
-        if (s[i] == '='){
-            pos_equ = i;
-            break;
-        }
-    
- 
-    if (pos_colon == -1 || pos_equ == -1)
-        return;
-
-
-    //Grabbing each element
-    object_name = (char*) malloc( (sizeof(char)) * (pos_colon) );
-    amount = pos_colon - 1;
-    strncpy(object_name, s + 1, amount);
-    object_name = de_backslah_n(object_name);
-
-
-    property_name = (char*) malloc( (sizeof(char)) * (pos_equ - pos_colon) );
-    amount = pos_equ - (pos_colon + 1);
-    strncpy(property_name, s + (pos_colon + 1), amount);
-    property_name = de_backslah_n(property_name);
-
-
-    value_name = (char*) malloc( (sizeof(char)) * (len - pos_equ) );
-    amount = len - (pos_equ + 1);
-    strncpy(value_name, s + (pos_equ + 1), amount);
-    value_name = de_backslah_n(value_name);
-
-
-    temptemp = root;
-
-    while(temptemp != NULL){
-        
-        if( (strcmp(temptemp->object_data, object_name) == 0) 
-            && (strcmp(temptemp->property_data, property_name) == 0) ){
-                
-                temptemp->value_data = (char*) realloc(temptemp->value_data, (sizeof(char)) * (strlen(value_name) +1) );
-                strcpy(temptemp->value_data, value_name);
-        }
-
-        temptemp = temptemp->next;    
-    }
-
-    //result(root);
-
-    // free(object_name);
-    // free(property_name);
-    // free(value_name);
-}
-
-
-char* de_backslah_n(char* cutphrase){
-
-    int i = 0;
-    int j = 0;
-    output = cutphrase;
-
-
-    while(i < strlen(cutphrase)){
-        if (cutphrase[i]!='\n')                           
-            output[j]=cutphrase[i];                     
-        else
-            j--;
-
-        i++;
-        j++;
-    }                           
-    
-    output[j] = 0;
-
-    return output;
-}
-
-
-
-void addNode(ListNode *temp){
-    temp->next = NULL;
-
-    if (root == NULL){
-        root = (ListNode*)malloc(sizeof(ListNode));
-        
-        root->object_data = (char*) malloc( (sizeof(char)) * strlen(temp->object_data) );
-        root->property_data = (char*) malloc( (sizeof(char)) * strlen(temp->property_data) );
-        root->value_data = (char*) malloc( (sizeof(char)) * strlen(temp->value_data) );
-
-        strcpy(root->object_data, temp->object_data);
-        strcpy(root->property_data, temp->property_data);
-        strcpy(root->value_data, temp->value_data);
+        strncat(root->object_data, question+objBeg, (objEnd - objBeg + 1));
+        strncat(root->property_data, question+propBeg, (propEnd - propBeg + 1));
+        strncat(root->value_data, unknown, strlen(unknown));
     }
     else{
-        ListNode *temptemp = root;
-        
-        //Create struct
-        ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
+        ListNode *tempNode = root;
 
-        while(temptemp->next != NULL)
-            temptemp = temptemp->next;
-        
-        //Malloc
-        newNode->object_data = (char*) malloc( (sizeof(char)) * strlen(temp->object_data) );
-        newNode->property_data = (char*) malloc( (sizeof(char)) * strlen(temp->property_data) );
-        newNode->value_data = (char*) malloc( (sizeof(char)) * strlen(temp->value_data) );
-        
-        //Copy the data
-        strcpy(newNode->object_data, temp->object_data);
-        strcpy(newNode->property_data, temp->property_data);
-        strcpy(newNode->value_data, temp->value_data);
+        while(tempNode->nextNode != NULL)
+            tempNode = tempNode->nextNode;
 
-        //Set the node
-        temptemp->next = newNode;
+        ListNode *newNode = (ListNode*)malloc( sizeof(ListNode) * aByte);
+    
+        newNode->object_data = (STRING) malloc( (objEnd - objBeg + 1) * aByte );
+        newNode->property_data = (STRING) malloc( (propEnd - propBeg +1) * aByte );
+        newNode->value_data = (STRING) malloc( strlen(unknown) * aByte);
+    
+        //Set the next node to null to prevent infinite loop
+        newNode->nextNode = NULL;
+
+        strncat(newNode->object_data,question+objBeg,(objEnd - objBeg + 1));   
+        strncat(newNode->property_data,question+propBeg,(propEnd - propBeg + 1));  
+        strncat(newNode->value_data,unknown,strlen(unknown));
+    
+        tempNode->nextNode = newNode;
     }
 }
+
+
+
+void parseFactFile(){
+
+    Boolean checkEndLine = FALSE, endFile = FALSE;
+
+    //Position
+    int findF = -1, findColon = -1, findEqual = -1;
+    int count = 0, i;
+
+    char letter;
+    STRING arrString;
+
+    while(!endFile){
+        letter = fgetc(input1);
+
+        if(letter == EOF)
+            endFile = TRUE;
+
+        if(!endFile){
+
+            if(letter!= '\n')
+                count++;
+
+        if(count == 1 && letter == 'F' && findF == -1){
+            findF = count - 1;
+            arrString = (STRING)malloc( aByte );
+        }
+
+        if(letter == '\n')
+            checkEndLine = TRUE;
+
+        if(letter == ':' && findColon < 0)
+            findColon = count-1;
+
+        if(letter == '=' && findEqual < 0)
+            findEqual = count-1;
+
+        if(findF != -1 && letter != '\n'){
+
+                if(count > strlen(arrString) )
+                    arrString = (char*)realloc(arrString, (count + 1) * aByte);
+
+                arrString[count-1] = letter;
+            }
+        }
+
+        if(checkEndLine || endFile){
+
+            if(findF != -1 && findColon != -1 && findEqual != -1){
+                arrString = (char*)realloc(arrString, (count + 1) * aByte);
+                arrString[count]='\0';
+                getFacts(arrString,findF,findColon,findEqual);
+            }
+
+            if(findF != -1)
+                free(arrString);
+
+            if(checkEndLine){
+                findF = -1, findColon = -1, findEqual = -1;
+                checkEndLine = FALSE;
+                count = 0;
+            }
+        }
+    }
+}
+
+
+
+void getFacts(STRING line, int posF, int posCol, int posEqual){
+
+    int afterCrit = posF + 1;
+    
+    int beforeCol = posCol - 1;
+    int afterCol = posCol + 1;
+    
+    int beforeEqual = posEqual - 1;
+    int afterEqual = posEqual + 1;
+    
+    int endBack = strlen(line) - 1;
+    int i =0;
+
+    int objBeg = -1, objEnd = -1, propBeg = -1, propEnd = -1, valBeg = -1, valEnd = -1;
+
+    Boolean done = FALSE, check = FALSE;
+
+    while(!check){
+
+        if(objBeg < 0 && line[afterCrit] != ' ' )
+            objBeg = afterCrit;
+    
+        if(objEnd < 0 && line[beforeCol] != ' ' ) 
+            objEnd = beforeCol;
+
+        if(propBeg < 0 && line[afterCol] != ' ' )
+            propBeg = afterCol;
+
+        if(propEnd < 0 && line[beforeEqual] != ' ' )
+            propEnd = beforeEqual;
+
+        if(valBeg < 0 && line[afterEqual] != ' ')
+            valBeg = afterEqual;
+
+        if(valEnd < 0 && line[endBack] != ' ')
+            valEnd = endBack;
+
+        if(objBeg > 0 && objEnd > 0 && propBeg > 0 && propEnd > 0 && valBeg >0 && valEnd >0)
+            check = TRUE;
+
+        afterCrit++;
+        beforeCol--;
+
+        afterCol++;
+        beforeEqual--;
+
+        afterEqual++;
+        endBack --;
+    }
+
+
+    //Adding the node
+    //The head is null
+    //Otherwise
+    if(root2 == NULL){
+
+        root2 = (ListNode*)malloc(sizeof(ListNode)* aByte );
+        root2->object_data = (STRING)malloc( (objEnd - objBeg + 1) * aByte );
+        root2->property_data = (STRING)malloc( (propEnd - propBeg + 1) *aByte);
+        root2->value_data = (STRING)malloc( (valEnd - valBeg + 1) * aByte );
+
+        //Set the next node to null to prevent infinite loop
+        root2->nextNode = NULL;
+
+        strncat(root2->object_data, line + objBeg, (objEnd - objBeg + 1));
+        strncat(root2->property_data, line + propBeg, (propEnd - propBeg + 1));
+        strncat(root2->value_data, line + valBeg, (valEnd - valBeg + 1));
+    }
+
+    else{
+        ListNode *tempNode = root2;
+
+        while(tempNode->nextNode != NULL)
+            tempNode = tempNode->nextNode;
+
+        ListNode *newNode = (ListNode*) malloc(sizeof(ListNode) * aByte);
+        newNode->object_data = (STRING) malloc( (objEnd - objBeg + 1) * aByte);
+        newNode->property_data = (STRING) malloc( (propEnd - propBeg + 1) * aByte);
+        newNode->value_data = (STRING) malloc( (valEnd - valBeg + 1) * aByte);
+
+        //Set the next node to null to prevent infinite loop
+        newNode->nextNode = NULL;
+
+        strncat(newNode->object_data, line + objBeg, (objEnd - objBeg + 1));
+        strncat(newNode->property_data, line + propBeg, (propEnd - propBeg + 1));
+        strncat(newNode->value_data, line + valBeg, (valEnd - valBeg + 1));
+
+        tempNode->nextNode = newNode;
+    }
+}
+
+
+
+void updateValue(){
+
+    ListNode *temp = root, *temp1 = root;
+
+    //Check and update the value on the question struct
+    while(temp != NULL){
+        ListNode *temp2 = root2;
+
+        while(temp2 != NULL){
+
+            if( (strcmp(temp2->object_data,temp->object_data) == 0) 
+                && (strcmp(temp2->property_data,temp->property_data) == 0) ){
+
+                free(temp->value_data);
+                temp->value_data = (STRING)malloc( (strlen(temp2->value_data)) * aByte);
+                strcpy(temp->value_data,temp2->value_data);
+            }
+
+            temp2 = temp2 ->nextNode;
+        }
+
+        temp = temp ->nextNode;
+    }
+
+    //Print out the final result
+    while(temp1 != NULL){
+
+        printf("F %s:", temp1->object_data);
+        printf(" %s", temp1->property_data);
+        printf("=%s\n", temp1->value_data);
+
+        temp1 = temp1 ->nextNode;
+    }
+
+}
+
+
+
+
+
+
+

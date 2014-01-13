@@ -1,0 +1,4 @@
+F PDP11: number_registers=8
+F CDC6600: number_registers=24
+F IBM360: opcode_bits=8
+F ARM: number_registers=unknown

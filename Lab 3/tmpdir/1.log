@@ -1,0 +1,155 @@
+==7972== Memcheck, a memory error detector
+==7972== Copyright (C) 2002-2011, and GNU GPL'd, by Julian Seward et al.
+==7972== Using Valgrind-3.7.0 and LibVEX; rerun with -h for copyright info
+==7972== Command: ./facts /dev/null cases/nofacts.Q
+==7972== Parent PID: 7971
+==7972== 
+==7972== Conditional jump or move depends on uninitialised value(s)
+==7972==    at 0x400BBC: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Conditional jump or move depends on uninitialised value(s)
+==7972==    at 0x4C2BE6A: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400EEE: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid write of size 1
+==7972==    at 0x4C2BEAF: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400EEE: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f1ec5 is 0 bytes after a block of size 5 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400E36: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Conditional jump or move depends on uninitialised value(s)
+==7972==    at 0x4C2BE6A: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400F22: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid write of size 1
+==7972==    at 0x4C2BEAF: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400F22: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f1f20 is 0 bytes after a block of size 16 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400E62: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Conditional jump or move depends on uninitialised value(s)
+==7972==    at 0x4C2BE6A: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400F63: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid write of size 1
+==7972==    at 0x4C2BEAF: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400F63: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f1f67 is 0 bytes after a block of size 7 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400EA8: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Conditional jump or move depends on uninitialised value(s)
+==7972==    at 0x4C2BE6A: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x401081: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid write of size 1
+==7972==    at 0x4C2BEAF: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x401081: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f29f7 is 0 bytes after a block of size 7 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400FC8: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Conditional jump or move depends on uninitialised value(s)
+==7972==    at 0x4C2BE6A: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x4010B2: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid write of size 1
+==7972==    at 0x4C2BEAF: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x4010B2: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f2a50 is 0 bytes after a block of size 16 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400FF4: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Conditional jump or move depends on uninitialised value(s)
+==7972==    at 0x4C2BE6A: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x4010F0: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid write of size 1
+==7972==    at 0x4C2BEAF: strncat (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x4010F0: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f2a97 is 0 bytes after a block of size 7 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x40103A: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid read of size 1
+==7972==    at 0x4E7D3B1: vfprintf (vfprintf.c:1630)
+==7972==    by 0x4E858D8: printf (printf.c:35)
+==7972==    by 0x4018AB: updateValue (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x40097B: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f1ec5 is 0 bytes after a block of size 5 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400E36: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid read of size 1
+==7972==    at 0x4E7D3B1: vfprintf (vfprintf.c:1630)
+==7972==    by 0x4E858D8: printf (printf.c:35)
+==7972==    by 0x4018C8: updateValue (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x40097B: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f1f20 is 0 bytes after a block of size 16 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400E62: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== Invalid read of size 1
+==7972==    at 0x4E7D3B1: vfprintf (vfprintf.c:1630)
+==7972==    by 0x4E858D8: printf (printf.c:35)
+==7972==    by 0x4018E5: updateValue (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x40097B: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==  Address 0x51f1f67 is 0 bytes after a block of size 7 alloc'd
+==7972==    at 0x4C2B6CD: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7972==    by 0x400EA8: parseQuestFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400C67: getFromQFile (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972==    by 0x400967: main (in /v/filer4b/v38q001/kimyu92/Desktop/kimLab3/facts)
+==7972== 
+==7972== 
+==7972== HEAP SUMMARY:
+==7972==     in use at exit: 0 bytes in 0 blocks
+==7972==   total heap usage: 122 allocs, 122 frees, 2,782 bytes allocated
+==7972== 
+==7972== All heap blocks were freed -- no leaks are possible
+==7972== 
+==7972== For counts of detected and suppressed errors, rerun with: -v
+==7972== Use --track-origins=yes to see where uninitialised values come from
+==7972== ERROR SUMMARY: 132 errors from 16 contexts (suppressed: 2 from 2)
