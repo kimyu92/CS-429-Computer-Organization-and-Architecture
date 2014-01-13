@@ -6,3 +6,8 @@ if (a)
     a[i] = malloc(sizeof *a[i] * M);
   }
 }
+
+
+
+
+http://www.thelearningpoint.net/computer-science/data-structures-singly-linked-list-with-c-program-source-code

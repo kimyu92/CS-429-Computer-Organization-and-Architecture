@@ -31,20 +31,39 @@ int value_index = 2;
 //Functions scope
 void process();
 
+//Grab String
 char *somehow_get_a_line();
 char* deblank(char* input);
 
+//Get fact and store them
 void get_a_fact(String thisString);
 char *substr(const char *data_str, int pos_start, int pos_end);
 
 void create_the_fact_array();
 void resize_the_fact_array();
+
+//Testing/Development
+void testing_linkedlist();
 //================================
 //End of Declaration
 //================================
- 
- 
-int main(int   argc, char **argv){
+
+//ListNode
+struct ListNode{
+    char *object_data;
+    char *property_data;
+    char *value_data;  
+    struct ListNode *next;              //the next node
+};
+
+struct GenericList{                 //Linkedlist consisting of ListNodes
+    struct ListNode *head;
+    struct ListNode *tail;
+    int size;
+};
+
+
+int main(int argc, char **argv){
     Boolean hasFile = FALSE;
     String extension = strrchr(*argv, '.');
     /* main driver program.  Define the input file
@@ -107,10 +126,53 @@ int main(int   argc, char **argv){
 //Main Process
 void process(){
     //Get a line
+    testing_linkedlist();
     somehow_get_a_line();
 
     //From a line start to process
     //get_a_fact();
+}
+
+
+//Testing 
+void testing_linkedlist(){
+      struct ListNode *root; 
+      struct ListNode *temp;
+      root = (struct ListNode*)malloc(sizeof(struct ListNode));
+
+      // object_data = (char*)malloc( (sizeof(char)) * 15 );
+      // object_data = "HI I am object A";
+
+      // property_data = (char*)malloc( (sizeof(char)) * 15 );
+      // property_data = "This is property A";
+
+      // value_data = (char*)malloc( (sizeof(char)) * 15 );
+      // value_data = "value A";
+      
+      temp = root;
+
+      temp->object_data = "HI I am object A";
+      temp->property_data = "This is property A";
+      temp->value_data ="value A";
+      
+      root->next = temp;
+
+      temp->object_data = "HI I am object B";
+      temp->property_data = "This is property B";
+      temp->value_data ="value B";
+      temp->next = NULL;
+
+      root->next = temp;
+
+      while(root != NULL){
+        printf("%s\n", root->object_data);
+        printf("%s\n", root->property_data);
+        printf("%s\n", root->value_data);
+
+        root = root-> next;
+      }
+
+      //free(root);
 }
 
 
@@ -263,24 +325,24 @@ void get_a_fact(String thisString){
     object_name = substr(s, 1, pos_colon );
     printf("%s\n", object_name);
     
-    fact[obj_index] = object_name;
-    obj_index++;
+    // fact[obj_index] = object_name;
+    // obj_index++;
 
     free(res);
 
     property_name = substr(s, pos_colon + 1, pos_equ);
     printf("%s\n", property_name);
 
-    fact[prop_index] = object_name;
-    prop_index++;
+    // fact[prop_index] = object_name;
+    // prop_index++;
 
     free(res);
 
     value_name = substr(s, pos_equ + 1, len);
     printf("%s\n\n", value_name);
 
-    fact[prop_index] = value_name;
-    prop_index++;
+    // fact[prop_index] = value_name;
+    // prop_index++;
 
     free(res);
 
@@ -312,17 +374,6 @@ char *substr(const char *data_str, int pos_start, int pos_end){
 }
 
 void create_the_fact_array(){
-    int obj_size = 10, prop_size = 10, value_size = 1;
-    int total = obj_size * prop_size * value_size;
-
-    int i = 0;
-    int j = 0; 
-
-    //Contagious 3d array
-    fact = (char **) malloc( total * (sizeof(char*)) );
-
-    for (i = 0; i < total; i++)
-        fact[i] = (char*) malloc( 20 * (sizeof(char)) );
 
 }
 
