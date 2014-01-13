@@ -21,13 +21,13 @@ typedef char *String;
  
 char *arrStr;
 char *res;
-char **fact;
 
 
-int obj_index = 0;
-int prop_index = 1;
-int value_index = 2;
- 
+String obj;
+String prop;
+String val;
+
+
 //Functions scope
 void process();
 
@@ -48,19 +48,69 @@ void testing_linkedlist();
 //End of Declaration
 //================================
 
+
+
+//Struct
 //ListNode
 struct ListNode{
     char *object_data;
     char *property_data;
     char *value_data;  
     struct ListNode *next;              //the next node
-};
+}*root = NULL, *temp;
 
-struct GenericList{                 //Linkedlist consisting of ListNodes
-    struct ListNode *head;
-    struct ListNode *tail;
-    int size;
-};
+
+//Method prototype from strct
+void display(struct ListNode *r);
+void addNode(struct ListNode *temp);
+
+
+//Print of linkedlist
+void display(struct ListNode *r){
+    int i  = 0; 
+    r = root;
+    if(r == NULL)
+        return;
+    
+    while(r != NULL){
+        printf("\n Node %d: ", i);
+        printf("%s ",r->object_data);
+        printf("%s ",r->property_data);
+        printf("%s ",r->value_data);
+        r=r->next;
+
+        i++;
+    }
+
+    printf("\n");
+}
+
+
+//Testing 
+void testing_linkedlist(){
+    //struct ListNode *temp;
+
+    root = (struct ListNode*)malloc(sizeof(struct ListNode));
+    temp = (struct ListNode*)malloc(sizeof(struct ListNode));
+    
+
+    // temp->object_data = "A";
+    // temp->property_data = "PropA";
+    // temp->value_data = "Cool";
+
+    // if (root == NULL){
+    //     root = temp;
+    //     root->next=NULL;
+    // }
+    // else{
+    //     temp->next=root;
+    //     root = temp;
+    // }
+
+    // display(temp);
+
+}
+
 
 
 int main(int argc, char **argv){
@@ -134,48 +184,6 @@ void process(){
 }
 
 
-//Testing 
-void testing_linkedlist(){
-      struct ListNode *root; 
-      struct ListNode *temp;
-      root = (struct ListNode*)malloc(sizeof(struct ListNode));
-
-      // object_data = (char*)malloc( (sizeof(char)) * 15 );
-      // object_data = "HI I am object A";
-
-      // property_data = (char*)malloc( (sizeof(char)) * 15 );
-      // property_data = "This is property A";
-
-      // value_data = (char*)malloc( (sizeof(char)) * 15 );
-      // value_data = "value A";
-      
-      temp = root;
-
-      temp->object_data = "HI I am object A";
-      temp->property_data = "This is property A";
-      temp->value_data ="value A";
-      
-      root->next = temp;
-
-      temp->object_data = "HI I am object B";
-      temp->property_data = "This is property B";
-      temp->value_data ="value B";
-      temp->next = NULL;
-
-      root->next = temp;
-
-      while(root != NULL){
-        printf("%s\n", root->object_data);
-        printf("%s\n", root->property_data);
-        printf("%s\n", root->value_data);
-
-        root = root-> next;
-      }
-
-      //free(root);
-}
-
-
 //Getting a string
 char *somehow_get_a_line(){
     int aByte;
@@ -233,6 +241,25 @@ char *somehow_get_a_line(){
 
         //Skip a blank line
         if(arrStr[0] != '\n' ){
+
+            printf("This is before     : %s\n", arrStr);                           //Debugging
+
+            //Cutting down the string
+            arrStr = deblank(arrStr);
+        
+            printf("What is the truncated: %s\n", arrStr);                         //Debugging
+
+            //Getting the fact
+            get_a_fact(arrStr);
+        }
+
+    }
+
+    if ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
+
+        //Skip a blank line
+        if(arrStr[0] != '\n' ){
+
             printf("This is before     : %s\n", arrStr);                           //Debugging
 
             //Cutting down the string
@@ -320,38 +347,55 @@ void get_a_fact(String thisString){
     printf("Result: \n");                               //Debugging starts
 
     
+    
 
     //Grabbing each element
-    object_name = substr(s, 1, pos_colon );
+    object_name = substr(s, 1, pos_colon);
     printf("%s\n", object_name);
+    printf("%lu\n", (sizeof(object_name)) );
     
-    // fact[obj_index] = object_name;
-    // obj_index++;
 
-    free(res);
+    temp->object_data = object_name;
+    printf("Error here \n");
+    //free(res);
 
     property_name = substr(s, pos_colon + 1, pos_equ);
     printf("%s\n", property_name);
-
-    // fact[prop_index] = object_name;
-    // prop_index++;
-
-    free(res);
+    temp->property_data = property_name;
+    //free(res);
 
     value_name = substr(s, pos_equ + 1, len);
+    temp->value_data = value_name;
     printf("%s\n\n", value_name);
+    //free(res);
 
-    // fact[prop_index] = value_name;
-    // prop_index++;
-
-    free(res);
-
-    
-    for(i = 0; i < 10; i++)
-        for(j = 0; j < 8; j++)
-            printf("%c\n", fact[i][j]);
+    addNode(temp);
+    //free(res);
+}
 
 
+void addNode(struct ListNode *temp){
+    struct ListNode *temptemp;
+
+    if (root == NULL){
+        root = temp;
+        root->next = NULL;
+    }
+    else{
+        temptemp = root;
+        
+        while(temptemp->next != NULL)
+            temptemp = temptemp->next;
+        
+        temptemp->next = temp;
+        temp->next = NULL;
+
+        
+        root = temp;
+
+    }
+
+    display(temp);
 }
 
 
@@ -362,7 +406,7 @@ char *substr(const char *data_str, int pos_start, int pos_end){
     
     //printf("HERE i am   \n");
     //char *res = (char*) malloc( (sizeof(char)) * (amount + 1) );
-    res = (char*) malloc( (sizeof(char)) * (amount + 1) );
+    res = (char*) malloc( (sizeof(char)) * (amount+1) );
     //printf("HERE i am v2  \n");
 
     //printf("HERE i am v3  \n");
