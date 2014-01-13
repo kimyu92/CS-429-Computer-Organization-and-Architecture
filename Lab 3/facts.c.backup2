@@ -20,18 +20,25 @@ typedef short Boolean;
 typedef char *String;
 
 
+char *res;
+
+
 //Functions scope
 void process();
 
 //Grab String
-String somehow_process_q_line();
-String somehow_get_a_line();
-String deblank(String input);
-String de_backslah_n(String cutphrase);
+char *somehow_process_q_line();
+char *somehow_get_a_line();
+char* deblank(char* input);
+char* de_backslah_n(char* cutphrase);
 
 //Get fact and store them
 void get_the_question(String thisString);
 void get_a_fact(String thisString);
+char *substr(const char *data_str, int pos_start, int pos_end);
+
+//Search the linkedlist and update
+void search_in_linkedlist();
 
 //Update the value
 void update_value(String object_name, String property_name, String value_name);
@@ -52,10 +59,10 @@ typedef struct ListNode{
 
 //Memory-related variables
 ListNode *root = NULL;
-//ListNode *temp = NULL;
+ListNode *temp;
 
 //For the get_the_question or get_a_fact methods
-
+char *object_name, *property_name, *value_name;
 
 //get_a_fact
 char *s;
@@ -63,10 +70,17 @@ char *s;
 //For the deblank
 char *output;
 
+//addNode
+ListNode *newNode;
+
+
+//freeMemNodes
+ListNode * clearTemp;
+
 
 //Method prototype from strct
 void display(ListNode *r);
-void addNode(ListNode *adding);
+void addNode(ListNode *temp);
 
 void result(ListNode *r);
 void freeMemNodes(ListNode *ptr);
@@ -137,8 +151,32 @@ void process(){
     somehow_process_q_line();
     somehow_get_a_line();
     result(root);
+    //freeMemNodes();
+
+    //free(newNode);
+    //free(temp);
+    //freeList(temp);
+    //free(arrStr);
+
+    //free(res);
 }
 
+void freeMemNodes(ListNode * ptr){
+
+    if(root == NULL)
+        return;
+
+    clearTemp = ptr;
+
+    while(clearTemp != NULL){
+
+        ListNode *temp = ptr->next;
+        
+        free(clearTemp);
+
+        clearTemp = temp;
+    }
+}
 
 void freeList(ListNode *head){
    ListNode *tmp;
@@ -147,6 +185,9 @@ void freeList(ListNode *head){
        tmp = head;
        head = head->next;
 
+       // free(tmp->object_data);
+       // free(tmp->property_data);
+       // free(tmp->value_data);
        free(tmp);
     }
 }
@@ -159,6 +200,9 @@ char *somehow_process_q_line(){
      
     int charInLine = 0;
     int maxCharInLine = 0;
+
+    //Buggy while loop
+    //Super buggySSSSSSS
 
     //Read byte by byte to get the length of longest line 
     while ( (aByte = fgetc(input2)) != EOF){
@@ -191,9 +235,13 @@ char *somehow_process_q_line(){
     if(maxCharInLine == 0 && (charInLine != 0) )
         maxCharInLine = charInLine;
 
+    //printf("%d \n",maxCharInLine);
+    //printf("%d \n",charInLine);
 
     //Go back to the head
     rewind(input2);
+    //printf("This is whatever size %d\n", maxCharInLine);
+    //printf("============================\n\n");
  
     //Allocate memory for fgets
     char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
@@ -204,11 +252,16 @@ char *somehow_process_q_line(){
         //Skip a blank line
         if(arrStr[0] != '\n' ){
 
+            //printf("This is before     : %s\n", arrStr);                           //Debugging
+
             //Cutting down the string
             arrStr = deblank(arrStr);
         
+            //printf("What is the truncated: %s\n", arrStr);                         //Debugging
+
             //Getting the fact
             get_the_question(arrStr);
+            
         }
 
     }
@@ -217,17 +270,16 @@ char *somehow_process_q_line(){
 
 
 
-void get_the_question(String s){
-    ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
+void get_the_question(String thisString){
+    s = thisString;
     int len = strlen(s);
+
     int pos_colon = -1;
     
     int i;
     int j;
-    
-    int holder;
-    int amount;
 
+    char *object_name1, *property_name1, *value_name1;
 
     if (s[0] != 'Q')
         return;
@@ -242,29 +294,40 @@ void get_the_question(String s){
     if (pos_colon == -1)
         return;
 
-    //Grabbing each element
-    temp->object_data = (char*) malloc( (sizeof(char)) * (pos_colon) );
-    amount = pos_colon - 1;
-    strncpy(temp->object_data, s + 1, amount);
-    temp->object_data = de_backslah_n(temp->object_data);
 
+    //printf("Result of question: \n");                               //Debugging starts
     
+    //ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
 
-    temp->property_data = (char*) malloc( (sizeof(char)) * (len - pos_colon) );
-    amount = len - (pos_colon + 1);
-    strncpy(temp->property_data, s + (pos_colon + 1), amount);
-    temp->property_data = de_backslah_n(temp->property_data);
+    temp = (ListNode*)malloc(sizeof(ListNode));
+
+    //Grabbing each element
+    object_name1 = (char*) malloc( (sizeof(char)) * (pos_colon) );
+    memcpy(object_name1, substr(s, 1, pos_colon), (pos_colon -1) );
+    object_name1 = de_backslah_n(object_name1); 
+    temp->object_data = object_name1;
+    free(res);
+
+    property_name1 = (char*) malloc( (sizeof(char)) * (len - pos_colon) );
+    memcpy(property_name1, substr(s, pos_colon + 1, len), (len - (pos_colon + 1)) );
+    property_name1 = de_backslah_n(property_name1);
+    temp->property_data = property_name1;
+    free(res);
 
 
-    temp->value_data = (char*) malloc( (sizeof(char)) * (8) );
-    strcpy(temp->value_data, "unknown"); 
+    value_name1 = (char*) malloc( (sizeof(char)) * (8) );
+    value_name1 = (String) "unknown";
+    temp->value_data = value_name1;
 
 
     addNode(temp);
+    freeList(temp);
+    // free(object_name1);
+    // free(property_name1);
+    // free(value_name1);
 
-    // free(temp->object_data);
-    // free(temp->property_data);
-    // free(temp->value_data);
+    // freeMemNodes(newNode);
+    // free(res);
     // free(temp);
 
 }
@@ -327,14 +390,24 @@ char *somehow_get_a_line(){
         //Skip a blank line
         if(arrStr[0] != '\n' ){
 
+            //printf("This is before     : %s\n", arrStr);                           //Debugging
+
             //Cutting down the string
             arrStr = deblank(arrStr);
+        
+            //printf("What is the truncated: %s\n", arrStr);                         //Debugging
 
             //Getting the fact
             get_a_fact(arrStr);
+
+            // free(object_name);
+            // free(property_name);
+            // free(value_name);
         }
 
     }
+
+
 
     free(arrStr);
 }
@@ -366,13 +439,8 @@ char* deblank(char* input){
 
 
 
-void get_a_fact(String s){
-    String object_name;
-    String property_name;
-    String value_name;
-
-    ListNode *temptemp; 
-
+void get_a_fact(String thisString){
+    s = thisString;
     int len = strlen(s);
 
     int pos_colon = -1;
@@ -380,7 +448,8 @@ void get_a_fact(String s){
     
     int i;
     int j;
-    int amount;
+
+    //char *object_name, *property_name, *value_name;
 
     if (s[0] != 'F')
         return;
@@ -405,47 +474,37 @@ void get_a_fact(String s){
 
     //Grabbing each element
     object_name = (char*) malloc( (sizeof(char)) * (pos_colon) );
-    amount = pos_colon - 1;
-    strncpy(object_name, s + 1, amount);
+    memcpy(object_name, substr(s, 1, pos_colon), (pos_colon -1) );
     object_name = de_backslah_n(object_name);
+    free(res);
 
 
     property_name = (char*) malloc( (sizeof(char)) * (pos_equ - pos_colon) );
-    amount = pos_equ - (pos_colon + 1);
-    strncpy(property_name, s + (pos_colon + 1), amount);
+    memcpy(property_name, substr(s, pos_colon + 1, pos_equ), (pos_equ - (pos_colon + 1)) );
     property_name = de_backslah_n(property_name);
+    free(res);
 
 
     value_name = (char*) malloc( (sizeof(char)) * (len - pos_equ) );
-    amount = len - (pos_equ + 1);
-    strncpy(value_name, s + (pos_equ + 1), amount);
+    memcpy(value_name, substr(s, pos_equ + 1, len), (len - (pos_equ + 1)) );
     value_name = de_backslah_n(value_name);
+    free(res);
 
 
-    temptemp = root;
-
-    while(temptemp != NULL){
-        
-        if( (strcmp(temptemp->object_data, object_name) == 0) 
-            && (strcmp(temptemp->property_data, property_name) == 0) ){
-                
-                temptemp->value_data = (char*) realloc(temptemp->value_data, (sizeof(char)) * (strlen(value_name) +1) );
-                strcpy(temptemp->value_data, value_name);
-        }
-
-        temptemp = temptemp->next;    
-    }
-
-    //result(root);
+    update_value(object_name, property_name, value_name);
 
     // free(object_name);
     // free(property_name);
     // free(value_name);
+    //free(res);
+    //free(temp);
 }
 
 
 char* de_backslah_n(char* cutphrase){
-
+    //char *output = cutphrase;
+    //char *output = (char*) malloc( (sizeof(char)) * strlen(cutphrase) );
+    //output = cutphrase;
     int i = 0;
     int j = 0;
     output = cutphrase;
@@ -467,44 +526,64 @@ char* de_backslah_n(char* cutphrase){
 }
 
 void addNode(ListNode *temp){
+     
+    //ListNode *newNode = (ListNode*) malloc(sizeof(ListNode));
+    newNode = (ListNode*) malloc(sizeof(ListNode));
+    
+    newNode->object_data = (char*) malloc( (sizeof(char))*strlen(temp->object_data));
+    memcpy(newNode->object_data, temp->object_data, strlen(temp->object_data));
+    
+
+    newNode->property_data = (char*) malloc( (sizeof(char))*strlen(temp->property_data));
+    memcpy(newNode->property_data, temp->property_data, strlen(temp->property_data));
+
+
+    //newNode->value_data = temp->value_data;
+    newNode->value_data = (char*) malloc( (sizeof(char))*strlen(temp->value_data));
+    memcpy(newNode->value_data, temp->value_data, strlen(temp->value_data));
+
     temp->next = NULL;
+     
 
-    if (root == NULL){
-        root = (ListNode*)malloc(sizeof(ListNode));
-        
-        root->object_data = (char*) malloc( (sizeof(char)) * strlen(temp->object_data) );
-        root->property_data = (char*) malloc( (sizeof(char)) * strlen(temp->property_data) );
-        root->value_data = (char*) malloc( (sizeof(char)) * strlen(temp->value_data) );
-
-        strcpy(root->object_data, temp->object_data);
-        strcpy(root->property_data, temp->property_data);
-        strcpy(root->value_data, temp->value_data);
-    }
+    if (root == NULL)
+        root = newNode;
     else{
         ListNode *temptemp = root;
-        
-        //Create struct
-        ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
-
+         
         while(temptemp->next != NULL)
             temptemp = temptemp->next;
-        
-        //Malloc
-        newNode->object_data = (char*) malloc( (sizeof(char)) * strlen(temp->object_data) );
-        newNode->property_data = (char*) malloc( (sizeof(char)) * strlen(temp->property_data) );
-        newNode->value_data = (char*) malloc( (sizeof(char)) * strlen(temp->value_data) );
-        
-        //Copy the data
-        strcpy(newNode->object_data, temp->object_data);
-        strcpy(newNode->property_data, temp->property_data);
-        strcpy(newNode->value_data, temp->value_data);
-
-        //Set the node
+         
         temptemp->next = newNode;
     }
+ 
+    display(root);
 }
 
+
+
+//Print of linkedlist
+void display(ListNode *r){
+    int i  = 0; 
+    //r = root;
+    if(r == NULL)
+        return;
+    
+    while(r != NULL){
+        // printf("\n Node %d: ", i);
+        // printf("%s ",r->object_data);
+        // printf("%s ",r->property_data);
+        // printf("%s ",r->value_data);
+        r=r->next;
+
+        i++;
+    }
+
+    //printf("\n");
+}
+
+
 void result(ListNode *r){
+    //r = root;
     if(r == NULL)
         return;
     
@@ -515,4 +594,47 @@ void result(ListNode *r){
         r=r->next;
 
     }
+
+    //printf("\n");
+}
+
+//Update the value
+void update_value(String object_name, String property_name, String value_name){
+
+    ListNode *temptemp = root;
+    
+    //printf("Updating the value.....    \n");
+    
+    while(temptemp->next != NULL){
+        // printf("This object is\n");
+        // printf("%s\n", temptemp->object_data);
+        // printf("%s\n", temptemp->property_data);
+        // printf("%s\n", temptemp->value_data);
+        
+        if( strcmp(temptemp->object_data, object_name) == 0 ){
+            //printf("no1 \n");
+            if( strcmp(temptemp->property_data, property_name) == 0 )
+                temptemp->value_data = value_name;
+                //memcpy(temptemp->value_data, value_name, strlen(value_name) );
+        }
+
+        temptemp = temptemp->next;    
+    }
+
+    display(root);
+    //printf("\n");
+
+}
+
+
+//Helper for get_a_fact
+//Fetch the data / value
+char *substr(const char *data_str, int pos_start, int pos_end){
+    int amount = pos_end - pos_start;
+
+    res = (char*) malloc( (sizeof(char)) * (amount+1) );
+    
+    memcpy(res, data_str + pos_start, amount);
+
+    return res;
 }
