@@ -129,7 +129,7 @@ int main(int argc, char **argv){
 void process(){
     //Get a line
     somehow_process_q_line();
-    //somehow_get_a_line();
+    somehow_get_a_line();
 }
 
 char *somehow_process_q_line(){
@@ -152,7 +152,7 @@ char *somehow_process_q_line(){
             theStartIsF = TRUE;
  
         //Count for the maximum line
-        if(theStartIsF && (aByte != '\n') )
+        if(theStartIsF && aByte != '\n')
             charInLine++;
  
         //Switch of the if statement down there
@@ -244,7 +244,7 @@ void get_the_question(String thisString){
     printf("%s\n", property_name);
 
 
-    value_name = (char *) malloc( (sizeof(char)) * 8 );
+    //value_name = (char *) malloc( (sizeof(char)) * 8 );
     value_name = (String) "unknown";
     printf("%s\n", property_name);
 
@@ -254,7 +254,7 @@ void get_the_question(String thisString){
 
     addNode(temp);
     //free(res);
-    //free(temp);
+    free(temp);
 
 }
 
@@ -389,9 +389,6 @@ void get_a_fact(String thisString){
 
     printf("Result: \n");                               //Debugging starts
 
-    
-    ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
-
     //Grabbing each element
     object_name = substr(s, 1, pos_colon);    
     printf("%s\n", object_name);
@@ -401,7 +398,7 @@ void get_a_fact(String thisString){
     printf("%s\n", property_name);
 
 
-    value_name = substr(s, pos_equ + 1, len);
+    value_name = substr(s, pos_equ + 1, len-1);
     printf("%s\n\n", value_name);
 
     update_value(object_name, property_name, value_name);
@@ -462,15 +459,24 @@ void display(struct ListNode *r){
 void update_value(String object_name, String property_name, String value_name){
 
     ListNode *temptemp = root;
-    printf("Infinite loop    \n");
-    if(temptemp->next != NULL){
-        printf("%s\n", temptemp->object_data);
-        printf("%s\n", temptemp->property_data);
-        printf("%s\n", temptemp->value_data);
+    
+    printf("Updating the value.....    \n");
+    
+    while(temptemp->next != NULL){
+        // printf("This object is\n");
+        // printf("%s\n", temptemp->object_data);
+        // printf("%s\n", temptemp->property_data);
+        // printf("%s\n", temptemp->value_data);
+        
         if( strcmp(temptemp->object_data, object_name) == 0 )
             if( strcmp(temptemp->property_data, property_name) == 0 )
                 temptemp->value_data = value_name;
+
+        temptemp = temptemp->next;    
     }
+
+    display(root);
+    printf("\n");
 
 }
 
