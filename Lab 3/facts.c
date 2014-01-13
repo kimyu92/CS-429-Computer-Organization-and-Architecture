@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <limits.h>
  
 FILE *input;
 FILE *input2;
@@ -56,9 +55,6 @@ ListNode *root = NULL;
 
 //For the get_the_question or get_a_fact methods
 
-
-//get_a_fact
-char *s;
 
 //For the deblank
 char *output;
@@ -130,6 +126,18 @@ int main(int argc, char **argv){
     exit(0);
 }
 
+void result(ListNode *r){
+    if(r == NULL)
+        return;
+    
+    while(r != NULL){
+        printf("F %s:",r->object_data);
+        printf(" %s=",r->property_data);
+        printf("%s\n",r->value_data);
+        r=r->next;
+
+    }
+}
 
 //Main Process
 void process(){
@@ -151,7 +159,7 @@ void freeList(ListNode *head){
     }
 }
 
-char *somehow_process_q_line(){
+String somehow_process_q_line(){
     int aByte;
  
     Boolean theStartIsQ = FALSE;
@@ -196,10 +204,10 @@ char *somehow_process_q_line(){
     rewind(input2);
  
     //Allocate memory for fgets
-    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
+    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 2) );
      
     //Go again my size
-    while( (fgets(arrStr, (maxCharInLine + 1), input2)) != NULL ){
+    while( (fgets(arrStr, (maxCharInLine + 2), input2)) != NULL ){
 
         //Skip a blank line
         if(arrStr[0] != '\n' ){
@@ -213,6 +221,7 @@ char *somehow_process_q_line(){
 
     }
     free(arrStr);
+    arrStr = NULL;
 }
 
 
@@ -224,8 +233,7 @@ void get_the_question(String s){
     
     int i;
     int j;
-    
-    int holder;
+
     int amount;
 
 
@@ -262,16 +270,16 @@ void get_the_question(String s){
 
     addNode(temp);
 
-    // free(temp->object_data);
-    // free(temp->property_data);
-    // free(temp->value_data);
-    // free(temp);
+    free(temp->object_data);
+    free(temp->property_data);
+    free(temp->value_data);
+    free(temp);
 
 }
 
 
 //Getting a string
-char *somehow_get_a_line(){
+String somehow_get_a_line(){
     int aByte;
  
     Boolean theStartIsF = FALSE;
@@ -319,10 +327,10 @@ char *somehow_get_a_line(){
 
  
     //Allocate memory for fgets
-    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
+    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 2) );
      
     //Go again my size
-    while ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
+    while ( (fgets(arrStr, (maxCharInLine + 2), input)) != NULL ){
 
         //Skip a blank line
         if(arrStr[0] != '\n' ){
@@ -337,12 +345,13 @@ char *somehow_get_a_line(){
     }
 
     free(arrStr);
+    arrStr = NULL;
 }
 
 
 
 //Cutdown the string
-char* deblank(char* input){
+String deblank(char* input){
     //char *output = input;
     int i = 0;
     int j = 0;
@@ -466,6 +475,8 @@ char* de_backslah_n(char* cutphrase){
     return output;
 }
 
+
+
 void addNode(ListNode *temp){
     temp->next = NULL;
 
@@ -501,18 +512,5 @@ void addNode(ListNode *temp){
 
         //Set the node
         temptemp->next = newNode;
-    }
-}
-
-void result(ListNode *r){
-    if(r == NULL)
-        return;
-    
-    while(r != NULL){
-        printf("F %s:",r->object_data);
-        printf(" %s=",r->property_data);
-        printf("%s\n",r->value_data);
-        r=r->next;
-
     }
 }
