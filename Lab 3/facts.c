@@ -21,7 +21,12 @@ typedef char *String;
  
 char *arrStr;
 char *res;
-char ***fact;
+char *fact;
+
+
+int obj_index = 0;
+int prop_index = 1;
+int value_index = 2;
  
 //Functions scope
 void process();
@@ -162,7 +167,7 @@ char *somehow_get_a_line(){
 
      
     //Go again my size
-    if ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
+    while ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
 
         //Skip a blank line
         if(arrStr[0] != '\n' ){
@@ -256,14 +261,26 @@ void get_a_fact(String thisString){
     //Grabbing each element
     object_name = substr(s, 1, pos_colon );
     printf("%s\n", object_name);
+    
+    //fact[obj_index] = object_name;
+    obj_index++;
+
     free(res);
 
     property_name = substr(s, pos_colon + 1, pos_equ);
     printf("%s\n", property_name);
+
+    //fact[prop_index] = object_name;
+    prop_index++;
+
     free(res);
 
     value_name = substr(s, pos_equ + 1, len);
     printf("%s\n\n", value_name);
+
+    //fact[prop_index] = object_name;
+    prop_index++;
+
     free(res);
 }
 
@@ -287,33 +304,11 @@ char *substr(const char *data_str, int pos_start, int pos_end){
 }
 
 void create_the_fact_array(){
-    int obj_size = 5, prop_size = 10, value_size = 1;
-    int i;
-    int j;
+    int obj_size = 10, prop_size = 10, value_size = 1;
 
-
-    fact = (char ***) malloc(obj_size * (sizeof(char **)) );
-    
-    //assert(fact != NULL);
-    
-    for (i = 0; i < obj_size; ++i){
-        fact[i] =(char **) malloc(prop_size * (sizeof(char *)) );
-        //assert(fact[i] != NULL);
-        
-        for (j = 0; j < prop_size; ++j){
-            fact[i][j] = (char*) malloc( (sizeof(char)) * value_size);
-            free(fact[i][j]);
-
-            //assert(fact[i][j] != NULL);
-        }
-
-        free(fact[i]);
-
-    }
-
+    //Contagious 3d array
+    fact = (char *) malloc(obj_size * prop_size * value_size * (sizeof(char)) );
     free(fact);
-    printf("This is shit\n");
-    
 }
 
 
