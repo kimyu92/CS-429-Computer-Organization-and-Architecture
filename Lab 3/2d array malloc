@@ -1,0 +1,8 @@
+T **a = malloc(sizeof *a * N);
+if (a)
+{
+  for (i = 0; i < N; i++)
+  {
+    a[i] = malloc(sizeof *a[i] * M);
+  }
+}

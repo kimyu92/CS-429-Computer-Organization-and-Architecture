@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 
 FILE *input;
 FILE *input2;
@@ -17,6 +18,9 @@ typedef short Boolean;
 #define FALSE 0
 
 typedef char *String;
+
+char *arrStr;
+char **fact;
 
 
 char *somehow_get_a_line();
@@ -87,16 +91,68 @@ int main(int   argc, char **argv){
     exit(0);
 }
 
+
 char *somehow_get_a_line(){
     int aByte;
 
+    Boolean theStartIsF = FALSE;
+    Boolean countedTheLine = TRUE;
+    
+    int charInLine = 0;
+    int maxCharInLine = 0;
+
+    int i = 0;
+    int count = 0;
+    String thisString;
+
     while ( (aByte = fgetc(input)) != EOF){
 
-        //Find the F
-        if(aByte != 'F' && aByte != ' '){
-            printf("Tlalalalalalal      %c \n", aByte);
+        //Switch on before a line
+        if(aByte == 'F')
+            theStartIsF = TRUE;
+
+        //Count for the maximum line
+        if(theStartIsF && aByte != '\n')
+            charInLine++;
+
+        //Switch of the if statement down there
+        if(aByte == ':')
+            countedTheLine = FALSE;
+
+        //Get the object name
+        if (theStartIsF && countTheLine && aByte != ' '){
+            
         }
+
+        //Switch off after a line
+        if(aByte == '\n'){
+            theStartIsF = FALSE;
+
+            if(charInLine > maxCharInLine)
+                maxCharInLine = charInLine;
+        }
+
+        
     }
+
+    //Go back to the head
+    rewind(input);
+    printf("This is whatever size %d\n", maxCharInLine);
+
+    //Allocate memory for fgets
+    arrStr = (char*) malloc(sizeof(char) * maxCharInLine + 1);
+    free(arrStr);
+
+    
+    //Go again my size
+    while ( (thisString = fgets(arrStr, maxCharInLine, input)) != '\0'){
+        printf("%s\n", thisString);
+    }
+
+
+    // if ( (thisString = fgets(arrStr, maxCharInLine, input)) != NULL ){
+    //     printf("DDDD   \n");
+    // }
 
 
 
