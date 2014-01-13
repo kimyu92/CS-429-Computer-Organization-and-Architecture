@@ -30,6 +30,7 @@ void process();
 char *somehow_process_q_line();
 char *somehow_get_a_line();
 char* deblank(char* input);
+char* de_backslah_n(char* cutphrase);
 
 //Get fact and store them
 void get_the_question(String thisString);
@@ -234,12 +235,14 @@ void get_the_question(String thisString){
     ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
 
     //Grabbing each element
-    object_name = substr(s, 1, pos_colon);    
+    object_name = substr(s, 1, pos_colon);
+    object_name = de_backslah_n(object_name);    
     temp->object_data = object_name;
     printf("%s\n", object_name);
 
 
-    property_name = substr(s, pos_colon + 1, len-1);
+    property_name = substr(s, pos_colon + 1, len);
+    property_name = de_backslah_n(property_name);
     temp->property_data = property_name;
     printf("%s\n", property_name);
 
@@ -390,15 +393,18 @@ void get_a_fact(String thisString){
     printf("Result: \n");                               //Debugging starts
 
     //Grabbing each element
-    object_name = substr(s, 1, pos_colon);    
+    object_name = substr(s, 1, pos_colon);
+    object_name = de_backslah_n(object_name);    
     printf("%s\n", object_name);
 
 
     property_name = substr(s, pos_colon + 1, pos_equ);
+    property_name = de_backslah_n(property_name);
     printf("%s\n", property_name);
 
 
-    value_name = substr(s, pos_equ + 1, len-1);
+    value_name = substr(s, pos_equ + 1, len);
+    value_name = de_backslah_n(value_name);
     printf("%s\n\n", value_name);
 
     update_value(object_name, property_name, value_name);
@@ -408,6 +414,25 @@ void get_a_fact(String thisString){
 }
 
 
+char* de_backslah_n(char* cutphrase){
+    char *output = cutphrase;
+    int i = 0;
+    int j = 0;
+    
+    while(i < strlen(cutphrase)){
+        if (cutphrase[i]!='\n')                           
+            output[j]=cutphrase[i];                     
+        else
+            j--;
+
+        i++;
+        j++;
+    }                           
+    
+    output[j] = 0;
+
+    return output;
+}
 
 void addNode(struct ListNode *temp){
      
