@@ -18,8 +18,8 @@ typedef short Boolean;
 #define FALSE 0
  
 typedef char *String;
-
-
+ 
+char *arrStr;
 char *res;
 
 
@@ -57,33 +57,11 @@ typedef struct ListNode{
     struct ListNode *next;
 }ListNode;
 
-//Memory-related variables
 ListNode *root = NULL;
-ListNode *temp;
-
-//For the get_the_question or get_a_fact methods
-char *object_name, *property_name, *value_name;
-
-//get_a_fact
-char *s;
-
-//For the deblank
-char *output;
-
-//addNode
-ListNode *newNode;
-
-
-//freeMemNodes
-ListNode * clearTemp;
-
 
 //Method prototype from strct
-void display(ListNode *r);
-void addNode(ListNode *temp);
-
-void result(ListNode *r);
-void freeMemNodes();
+void display(struct ListNode *r);
+void addNode(struct ListNode *temp);
 
 //==================================
 //End of Declaration of struct
@@ -102,11 +80,11 @@ int main(int argc, char **argv){
     while (argc > 1 && !hasFile){
 
         if (!extension){
-            //printf ("Please feed in .fax file\n");
+            printf ("Please feed in .fax file\n");
             hasFile == FALSE;
         }
         else{
-            //printf("Thanks for feeding in with the extension of %s\n", extension + 1);
+            printf("Thanks for feeding in with the extension of %s\n", extension + 1);
              
             input = fopen(*argv,"r");
  
@@ -114,13 +92,13 @@ int main(int argc, char **argv){
             argv++;
  
             input2 = fopen(*argv,"r");
-            //printf(" yeaa  \n");
+            printf(" yeaa  \n");
  
             if(input2 != NULL){
                 //Check the file extension
                 if ( (strrchr(*argv, '.') + 1)[0]== 'q' ){
                     hasFile = TRUE;
-                    //printf("This is the q file\n");
+                    printf("This is the q file\n");
  
                     process();
  
@@ -132,7 +110,7 @@ int main(int argc, char **argv){
                  
             }
             else{
-                //printf("Please feed me the stdin/ second file\n\n");
+                printf("Please feed me the stdin/ second file\n\n");
                 input2 = stdin;
             }
         }
@@ -149,32 +127,6 @@ void process(){
     //Get a line
     somehow_process_q_line();
     somehow_get_a_line();
-    result(root);
-    //freeMemNodes();
-
-    //free(newNode);
-    free(temp);
-    //free(arrStr);
-    //free(res);
-}
-
-void freeMemNodes(){
-    clearTemp = NULL;
-
-    if(root == NULL)
-        return;
-
-    clearTemp = root;
-
-    while(root){
-        clearTemp = root->next;
-
-        free(root);
-
-        root = clearTemp;
-    }
-
-    //free(temp1);
 }
 
 char *somehow_process_q_line(){
@@ -220,16 +172,16 @@ char *somehow_process_q_line(){
     if(maxCharInLine == 0 && (charInLine != 0) )
         maxCharInLine = charInLine;
 
-    //printf("%d \n",maxCharInLine);
-    //printf("%d \n",charInLine);
+    printf("%d \n",maxCharInLine);
+    printf("%d \n",charInLine);
 
     //Go back to the head
     rewind(input2);
-    //printf("This is whatever size %d\n", maxCharInLine);
-    //printf("============================\n\n");
+    printf("This is whatever size %d\n", maxCharInLine);
+    printf("============================\n\n");
  
     //Allocate memory for fgets
-    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
+    arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
      
     //Go again my size
     while( (fgets(arrStr, (maxCharInLine + 1), input2)) != NULL ){
@@ -237,27 +189,23 @@ char *somehow_process_q_line(){
         //Skip a blank line
         if(arrStr[0] != '\n' ){
 
-            //printf("This is before     : %s\n", arrStr);                           //Debugging
+            printf("This is before     : %s\n", arrStr);                           //Debugging
 
             //Cutting down the string
             arrStr = deblank(arrStr);
         
-            //printf("What is the truncated: %s\n", arrStr);                         //Debugging
+            printf("What is the truncated: %s\n", arrStr);                         //Debugging
 
             //Getting the fact
             get_the_question(arrStr);
-
         }
 
     }
-
-    free(arrStr);
 }
 
 
-
 void get_the_question(String thisString){
-    s = thisString;
+    char *s = thisString;
     int len = strlen(s);
 
     int pos_colon = -1;
@@ -265,7 +213,7 @@ void get_the_question(String thisString){
     int i;
     int j;
 
-    
+    char *object_name, *property_name, *value_name;
 
 
     if (s[0] != 'Q')
@@ -282,33 +230,31 @@ void get_the_question(String thisString){
         return;
 
 
-    //printf("Result of question: \n");                               //Debugging starts
+    printf("Result of question: \n");                               //Debugging starts
     
-    //ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
-
-    temp = (ListNode*)malloc(sizeof(ListNode));
+    ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
 
     //Grabbing each element
     object_name = substr(s, 1, pos_colon);
     object_name = de_backslah_n(object_name);
-    //printf("%lu\n", strlen(object_name));    
+    printf("%lu\n", strlen(object_name));    
     temp->object_data = object_name;
-    //printf("%s\n", object_name);
+    printf("%s\n", object_name);
 
 
     property_name = substr(s, pos_colon + 1, len);
     property_name = de_backslah_n(property_name);
-    //printf("%lu\n", strlen(property_name));
+    printf("%lu\n", strlen(property_name));
     temp->property_data = property_name;
-    //printf("%s\n", property_name);
+    printf("%s\n", property_name);
 
 
     //value_name = (char *) malloc( (sizeof(char)) * 8 );
     value_name = (String) "unknown";
-    //printf("%s\n", property_name);
+    printf("%s\n", property_name);
 
     temp->value_data = value_name;
-    //printf("%s\n\n", value_name);
+    printf("%s\n\n", value_name);
 
 
     addNode(temp);
@@ -364,10 +310,11 @@ char *somehow_get_a_line(){
  
     //Go back to the head
     rewind(input);
-
+    printf("This is whatever size %d\n", maxCharInLine);
+    printf("============================\n\n");
  
     //Allocate memory for fgets
-    char *arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
+    arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
      
     //Go again my size
     while ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
@@ -375,31 +322,27 @@ char *somehow_get_a_line(){
         //Skip a blank line
         if(arrStr[0] != '\n' ){
 
-            //printf("This is before     : %s\n", arrStr);                           //Debugging
+            printf("This is before     : %s\n", arrStr);                           //Debugging
 
             //Cutting down the string
             arrStr = deblank(arrStr);
         
-            //printf("What is the truncated: %s\n", arrStr);                         //Debugging
+            printf("What is the truncated: %s\n", arrStr);                         //Debugging
 
             //Getting the fact
             get_a_fact(arrStr);
         }
 
     }
-
-    free(arrStr);
 }
 
 
 
 //Cutdown the string
 char* deblank(char* input){
-    //char *output = input;
+    char *output = input;
     int i = 0;
     int j = 0;
-
-    output = input;
     
     while(i < strlen(input)){
         if (input[i]!=' ')                           
@@ -419,7 +362,7 @@ char* deblank(char* input){
 
 
 void get_a_fact(String thisString){
-    s = thisString;
+    char *s = thisString;
     int len = strlen(s);
 
     int pos_colon = -1;
@@ -427,6 +370,8 @@ void get_a_fact(String thisString){
     
     int i;
     int j;
+
+    char *object_name, *property_name, *value_name;
 
 
     if (s[0] != 'F')
@@ -448,21 +393,26 @@ void get_a_fact(String thisString){
  
     if (pos_colon == -1 || pos_equ == -1)
         return;
+    
 
+    printf("Result: \n");                               //Debugging starts
 
     //Grabbing each element
     object_name = substr(s, 1, pos_colon);
-    object_name = de_backslah_n(object_name);
+    object_name = de_backslah_n(object_name); 
+    printf("%lu\n", strlen(object_name));   
+    printf("%s\n", object_name);
 
 
     property_name = substr(s, pos_colon + 1, pos_equ);
     property_name = de_backslah_n(property_name);
-
+    printf("%lu\n", strlen(property_name));
+    printf("%s\n", property_name);
 
 
     value_name = substr(s, pos_equ + 1, len);
     value_name = de_backslah_n(value_name);
-
+    printf("%s\n\n", value_name);
 
     update_value(object_name, property_name, value_name);
 
@@ -472,14 +422,10 @@ void get_a_fact(String thisString){
 
 
 char* de_backslah_n(char* cutphrase){
-    //char *output = cutphrase;
-    //char *output = (char*) malloc( (sizeof(char)) * strlen(cutphrase) );
-    //output = cutphrase;
+    char *output = cutphrase;
     int i = 0;
     int j = 0;
-    output = cutphrase;
-
-
+    
     while(i < strlen(cutphrase)){
         if (cutphrase[i]!='\n')                           
             output[j]=cutphrase[i];                     
@@ -495,10 +441,9 @@ char* de_backslah_n(char* cutphrase){
     return output;
 }
 
-void addNode(ListNode *temp){
+void addNode(struct ListNode *temp){
      
-    //ListNode *newNode = (ListNode*) malloc(sizeof(ListNode));
-    newNode = (ListNode*) malloc(sizeof(ListNode));
+    ListNode *newNode = (ListNode*) malloc(sizeof(ListNode));
  
     newNode->object_data = temp->object_data;
     newNode->property_data = temp->property_data;
@@ -523,40 +468,23 @@ void addNode(ListNode *temp){
 
 
 //Print of linkedlist
-void display(ListNode *r){
+void display(struct ListNode *r){
     int i  = 0; 
     //r = root;
     if(r == NULL)
         return;
     
     while(r != NULL){
-        // printf("\n Node %d: ", i);
-        // printf("%s ",r->object_data);
-        // printf("%s ",r->property_data);
-        // printf("%s ",r->value_data);
+        printf("\n Node %d: ", i);
+        printf("%s ",r->object_data);
+        printf("%s ",r->property_data);
+        printf("%s ",r->value_data);
         r=r->next;
 
         i++;
     }
 
-    //printf("\n");
-}
-
-
-void result(ListNode *r){
-    //r = root;
-    if(r == NULL)
-        return;
-    
-    while(r != NULL){
-        printf("F %s:",r->object_data);
-        printf(" %s=",r->property_data);
-        printf("%s\n",r->value_data);
-        r=r->next;
-
-    }
-
-    //printf("\n");
+    printf("\n");
 }
 
 //Update the value
@@ -564,7 +492,7 @@ void update_value(String object_name, String property_name, String value_name){
 
     ListNode *temptemp = root;
     
-    //printf("Updating the value.....    \n");
+    printf("Updating the value.....    \n");
     
     while(temptemp->next != NULL){
         // printf("This object is\n");
@@ -573,7 +501,7 @@ void update_value(String object_name, String property_name, String value_name){
         // printf("%s\n", temptemp->value_data);
         
         if( strcmp(temptemp->object_data, object_name) == 0 ){
-            //printf("no1 \n");
+            printf("no1 \n");
             if( strcmp(temptemp->property_data, property_name) == 0 )
                 temptemp->value_data = value_name;
         }
@@ -582,7 +510,7 @@ void update_value(String object_name, String property_name, String value_name){
     }
 
     display(root);
-    //printf("\n");
+    printf("\n");
 
 }
 
