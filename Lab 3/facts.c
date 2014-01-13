@@ -27,10 +27,12 @@ char *res;
 void process();
 
 //Grab String
+char *somehow_process_q_line();
 char *somehow_get_a_line();
 char* deblank(char* input);
 
 //Get fact and store them
+void get_the_question(String thisString);
 void get_a_fact(String thisString);
 char *substr(const char *data_str, int pos_start, int pos_end);
 
@@ -44,9 +46,9 @@ void search_in_linkedlist();
 
 //Struct of ListNode
 typedef struct ListNode{
-    char *object_data;
-    char *property_data;
-    char *value_data;  
+    String object_data;
+    String property_data;
+    String value_data;  
     
     //The next node
     struct ListNode *next;
@@ -71,12 +73,10 @@ int main(int argc, char **argv){
        from either standard input or a name on the
        command line.  Process all arguments.
     */
- 
+    char x;
+
     while (argc > 1 && !hasFile){
- 
-        argc--,
-        argv++;
- 
+
         if (!extension){
             printf ("Please feed in .fax file\n");
             hasFile == FALSE;
@@ -84,17 +84,19 @@ int main(int argc, char **argv){
         else{
             printf("Thanks for feeding in with the extension of %s\n", extension + 1);
              
-            input = fopen(*argv,"r");
+            input = fopen(argv[1],"r");
  
-            argc--;
-            argv++;
+            // argc--;
+            // argv++;
  
-            input2 = fopen(*argv,"r");
-             
+            input2 = fopen(argv[2],"r");
+            x = getc(input2);
+            printf(" yeaa  \n");
+            printf("%c\n", x);
  
             if(input2 != NULL){
                 //Check the file extension
-                if ( (strrchr(*argv, '.') + 1)[0]== 'q' ){
+                if ( (strrchr(argv[2], '.') + 1)[0]== 'q' ){
                     hasFile = TRUE;
                     printf("This is the q file\n");
  
@@ -108,8 +110,10 @@ int main(int argc, char **argv){
  
                  
             }
-            else
+            else{
                 printf("Please feed me the stdin/ second file\n\n");
+                input2 = stdin;
+            }
         }
 
     }
@@ -122,7 +126,131 @@ int main(int argc, char **argv){
 //Main Process
 void process(){
     //Get a line
-    somehow_get_a_line();
+    somehow_process_q_line();
+    //somehow_get_a_line();
+}
+
+char *somehow_process_q_line(){
+    int aByte;
+ 
+    Boolean theStartIsF = FALSE;
+    Boolean countedTheLine = TRUE;
+     
+    int charInLine = 0;
+    int maxCharInLine = 0;
+
+
+    //Read byte by byte to get the length of longest line 
+    while ( (aByte = fgetc(input2)) != EOF){
+ 
+        //Switch on before a line
+        if(aByte == 'Q')
+            theStartIsF = TRUE;
+ 
+        //Count for the maximum line
+        if(theStartIsF && aByte != '\n')
+            charInLine++;
+ 
+        //Switch of the if statement down there
+        if(aByte == ':')
+            countedTheLine = FALSE;
+
+        //Switch off after a line
+        if(aByte == '\n'){
+            theStartIsF = FALSE;
+ 
+            //Find the longest length amongs the line
+            if(charInLine > maxCharInLine)
+                maxCharInLine = charInLine;
+ 
+            charInLine = 0;
+ 
+        }
+ 
+         
+    }
+ 
+    //Go back to the head
+    rewind(input2);
+    printf("This is whatever size %d\n", maxCharInLine);
+    printf("============================\n\n");
+ 
+    //Allocate memory for fgets
+    arrStr = (char*) malloc( (sizeof(char)) * (maxCharInLine + 1) );
+     
+    //Go again my size
+    while ( (fgets(arrStr, (maxCharInLine + 1), input2)) != NULL ){
+
+        //Skip a blank line
+        if(arrStr[0] != '\n' ){
+
+            printf("This is before     : %s\n", arrStr);                           //Debugging
+
+            //Cutting down the string
+            arrStr = deblank(arrStr);
+        
+            printf("What is the truncated: %s\n", arrStr);                         //Debugging
+
+            //Getting the fact
+            get_the_question(arrStr);
+        }
+
+    }
+}
+
+
+void get_the_question(String thisString){
+    char *s = thisString;
+    int len = strlen(s);
+
+    int pos_colon = -1;
+    
+    int i;
+    int j;
+
+    char *object_name, *property_name, *value_name;
+
+
+    if (s[0] != 'Q')
+        return;
+
+    for (i = 0; i < len; i++){
+        if (s[i] == ':'){
+            pos_colon = i;
+            break;
+        }
+    }
+
+
+    if (pos_colon == -1)
+        return;
+
+
+    printf("Result of question: \n");                               //Debugging starts
+
+    
+    ListNode *temp = (ListNode*)malloc(sizeof(ListNode));
+
+    //Grabbing each element
+    object_name = substr(s, 1, pos_colon);    
+    temp->object_data = object_name;
+    printf("%s\n", object_name);
+
+
+    property_name = substr(s, pos_colon + 1, len -1 );
+    temp->property_data = property_name;
+    printf("%s\n", property_name);
+
+
+    value_name = (char *) malloc( (sizeof(char)) * 8 );
+    value_name = (String) "unknown";
+    temp->value_data = value_name;
+    printf("%s\n\n", value_name);
+    //free(res);
+
+    addNode(temp);
+    free(res);
+    free(temp);
 }
 
 
@@ -193,44 +321,6 @@ char *somehow_get_a_line(){
         }
 
     }
-
-    // if ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
-
-    //     //Skip a blank line
-    //     if(arrStr[0] != '\n' ){
-
-    //         printf("This is before     : %s\n", arrStr);                           //Debugging
-
-    //         //Cutting down the string
-    //         arrStr = deblank(arrStr);
-        
-    //         printf("What is the truncated: %s\n", arrStr);                         //Debugging
-
-    //         //Getting the fact
-    //         get_a_fact(arrStr);
-    //     }
-
-    // }
-
-    // if ( (fgets(arrStr, (maxCharInLine + 1), input)) != NULL ){
-
-    //     //Skip a blank line
-    //     if(arrStr[0] != '\n' ){
-
-    //         printf("This is before     : %s\n", arrStr);                           //Debugging
-
-    //         //Cutting down the string
-    //         arrStr = deblank(arrStr);
-        
-    //         printf("What is the truncated: %s\n", arrStr);                         //Debugging
-
-    //         //Getting the fact
-    //         get_a_fact(arrStr);
-    //     }
-
-    // }
-
-
 }
 
 
