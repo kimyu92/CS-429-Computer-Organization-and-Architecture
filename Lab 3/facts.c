@@ -156,7 +156,6 @@ void process(){
     //free(newNode);
     //free(temp);
     //freeList(temp);
-
     //free(arrStr);
 
     //free(res);
@@ -276,8 +275,7 @@ void get_the_question(String thisString){
     int i;
     int j;
 
-    
-
+    //char *object_name, *property_name, *value_name;
 
     if (s[0] != 'Q')
         return;
@@ -300,26 +298,22 @@ void get_the_question(String thisString){
     temp = (ListNode*)malloc(sizeof(ListNode));
 
     //Grabbing each element
-    object_name = substr(s, 1, pos_colon);
-    object_name = de_backslah_n(object_name);
-    //printf("%lu\n", strlen(object_name));    
+    object_name = (char*) malloc( (sizeof(char)) * (pos_colon) );
+    memcpy(object_name, substr(s, 1, pos_colon), (pos_colon -1) );
+    object_name = de_backslah_n(object_name); 
     temp->object_data = object_name;
-    //printf("%s\n", object_name);
+    free(res);
 
-
-    property_name = substr(s, pos_colon + 1, len);
+    property_name = (char*) malloc( (sizeof(char)) * (len - pos_colon) );
+    memcpy(property_name, substr(s, pos_colon + 1, len), (len - (pos_colon + 1)) );
     property_name = de_backslah_n(property_name);
-    //printf("%lu\n", strlen(property_name));
     temp->property_data = property_name;
-    //printf("%s\n", property_name);
+    free(res);
 
 
-    //value_name = (char *) malloc( (sizeof(char)) * 8 );
+    value_name = (char*) malloc( (sizeof(char)) * (8) );
     value_name = (String) "unknown";
-    //printf("%s\n", property_name);
-
     temp->value_data = value_name;
-    //printf("%s\n\n", value_name);
 
 
     addNode(temp);
@@ -441,6 +435,7 @@ void get_a_fact(String thisString){
     int i;
     int j;
 
+    //char *object_name, *property_name, *value_name;
 
     if (s[0] != 'F')
         return;
@@ -464,21 +459,29 @@ void get_a_fact(String thisString){
 
 
     //Grabbing each element
-    object_name = substr(s, 1, pos_colon);
+    object_name = (char*) malloc( (sizeof(char)) * (pos_colon) );
+    memcpy(object_name, substr(s, 1, pos_colon), (pos_colon -1) );
     object_name = de_backslah_n(object_name);
+    free(res);
 
 
-    property_name = substr(s, pos_colon + 1, pos_equ);
+    property_name = (char*) malloc( (sizeof(char)) * (pos_equ - pos_colon) );
+    memcpy(property_name, substr(s, pos_colon + 1, pos_equ), (pos_equ - (pos_colon + 1)) );
     property_name = de_backslah_n(property_name);
+    free(res);
 
 
-
-    value_name = substr(s, pos_equ + 1, len);
+    value_name = (char*) malloc( (sizeof(char)) * (len - pos_equ) );
+    memcpy(value_name, substr(s, pos_equ + 1, len), (len - (pos_equ + 1)) );
     value_name = de_backslah_n(value_name);
+    free(res);
 
 
     update_value(object_name, property_name, value_name);
 
+    // free(object_name);
+    // free(property_name);
+    // free(value_name);
     //free(res);
     //free(temp);
 }
