@@ -1,0 +1,70 @@
+		ORIG 10
+XADDR,  X
+MSG,    M
+N,		7
+
+
+		ORIG 256
+TEMP,	0
+LOOPN,	0
+
+FOUND,	0
+		CLA
+		TAD I XPTR
+		CMA IAC
+		AND I XPTR
+		DCA I XPTR
+		JMP I FOUND
+
+
+START,	
+		CLA CLL IAC RTL
+		DCA	TEMP	/ SAVE A
+ 		TAD	N	
+ 		CMA IAC		/ -N FOR ISZ
+ 		DCA	LOOPN	
+		TAD XADDR
+		DCA XPTR
+/	
+LOOP,	TAD	I XPTR	
+ 		CMA IAC		/ -X
+ 		TAD	TEMP	/ A-X
+ 		SNA CLA		/ SKIP IF NOT EQUAL, CLEAR A
+ 		JMS	FOUND	/ FOUND IT
+		ISZ XPTR    / next X value
+ 		ISZ	LOOPN	/ TEST END OF LOOP
+ 		JMP	LOOP	
+		CLA
+		TAD MSG
+		JMS PRINT
+		HLT
+XPTR,
+
+P0,     0
+PRINT,  0
+		DCA  P0
+P1,		TAD I P0
+		SZA RSS
+		JMP I PRINT
+		IOT 4,0
+		ISZ P0
+		CLA
+		JMP P1
+
+		
+		ORIG 512
+X,      1
+		2
+		3
+		4
+		5
+		6
+
+		ORIG 900
+M,      'D'
+		'O'
+		'N'
+		'E'
+		10
+		0
+		END START

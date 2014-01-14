@@ -1,3 +1,8 @@
+//Name   : Kim Yu Ng
+//CS ID  : kimyu92
+//UT EID : kn6254
+//Section: 53835
+//TA     : Ji Hong
 /* 
    Assembler for PDP-8.  Memory and object file creation. 
 */
@@ -28,8 +33,6 @@ Address entry_point = 0;
 
 int get_the_block(int startIndex);
 void write_the_block(int startIndex, int endIndex);
-void need_newline_or_not();
-void need_space_or_not();
 
 
 void Clear_Object_Code(void)
@@ -81,11 +84,9 @@ void Output_Object_Code(void)
   int obj_3 = 0x4a;
   int obj_4 = 0x38;
 
-
   int byte_5;
   int byte_6;
 
-  // fprintf(pFile, "4f42 4a38 ");
   fprintf(pFile, "%c", obj_1);
   fprintf(pFile, "%c", obj_2);
   fprintf(pFile, "%c", obj_3);
@@ -94,14 +95,10 @@ void Output_Object_Code(void)
   byte_5 = (entry_point >> 6) & 0x3F;
   byte_6 = entry_point & 0x3F;
 
-  //fprintf(stderr, "lalalal  %x\n", entry_point);
-  // fprintf(pFile, "%02x", byte_5);
-  // fprintf(pFile, "%02x", byte_6);
   fprintf(pFile, "%c", byte_5);
   fprintf(pFile, "%c", byte_6);
 
   howManyBytes +=12;
-  need_space_or_not();
 
   int i;
   int endIndex;
@@ -117,28 +114,16 @@ void Output_Object_Code(void)
       totalblock *= 2;
       totalblock += 1;
 
-      // if(totalblock ==9)
-      //   fprintf(stderr,"%d\n", totalblock);
-      //Write size of block
       block_1 = totalblock;
 
-      // fprintf(pFile, "%02x", block_1);
       fprintf(pFile, "%c", block_1);
       howManyBytes+=2;
-      need_space_or_not();
-      need_newline_or_not();
-      
+
       write_the_block(i, endIndex);
 
       i = endIndex;
     }
-
-
-
-  }
-  
-  // printf("%d\n", howManyBytes);
-  
+  } 
 }
 
 
@@ -146,12 +131,11 @@ void Output_Object_Code(void)
 int get_the_block(int startIndex){
   
   int i = startIndex;
-  // int max = startIndex + 253;
 
   while( defined[i] && i <= 4095){
     i++;
   }
-
+  
   return i;
 }
 
@@ -172,56 +156,24 @@ void write_the_block(int startIndex, int endIndex){
     if(i == startIndex){
       addr_1 = (startIndex >> 6) & 0x3F;
       addr_2 = startIndex & 0x3F;
-      //fprintf(pFile, "%02x", addr_1);
+
       fprintf(pFile, "%c", addr_1);
       howManyBytes+=2;
-      need_space_or_not();
-      need_newline_or_not();
 
-      // fprintf(pFile, "%02x", addr_2);
       fprintf(pFile, "%c", addr_2);
       howManyBytes+=2;
-      need_space_or_not();
-      need_newline_or_not();
     }
-   
 
     val_1 = (memory[i] >> 6) & 0x3F;
     val_2 = memory[i] & 0x3F;
-      
-    // fprintf(pFile, "%02x", val_1);
+
     fprintf(pFile, "%c", val_1);
     howManyBytes+=2;
-    need_space_or_not();
-    need_newline_or_not();
 
-    // fprintf(pFile, "%02x", val_2);
     fprintf(pFile, "%c", val_2);
     howManyBytes+=2;
-    need_space_or_not();
-    need_newline_or_not();
     
-
     i++;
   }
 
 }
-
-
-void need_newline_or_not(){
-
-  // if ( (howManyBytes % 32) == 0 ){
-  //     fprintf(pFile, "\n");
-  //   }
-
-}
-
-
-void need_space_or_not(){
-
-  // if ( (howManyBytes % 4) == 0 && ((howManyBytes % 32) != 0) ){
-  //     fprintf(pFile, " ");
-  //   }
-
-}
-

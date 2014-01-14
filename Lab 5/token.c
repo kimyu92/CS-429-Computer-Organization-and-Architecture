@@ -28,6 +28,7 @@ void save_char(char c)
                 buffer_length = 256;
             else
                 buffer_length = 2*buffer_length;
+            
             input_buffer = realloc(input_buffer, buffer_length);
         }
     input_buffer[input_line_length] = c;

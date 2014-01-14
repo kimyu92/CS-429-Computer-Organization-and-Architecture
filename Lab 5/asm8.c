@@ -1,3 +1,8 @@
+//Name   : Kim Yu Ng
+//CS ID  : kimyu92
+//UT EID : kn6254
+//Section: 53835
+//TA     : Ji Hong
 /*
   PDP-8 Assembler:
 
