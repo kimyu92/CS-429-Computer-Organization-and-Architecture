@@ -78,8 +78,7 @@ int main(int argc, String *argv)
             argc--, argv++;
         }
 
-    if (argc != 2)
-        {
+    if (argc != 2){
             usage();
             exit(-1);
         }

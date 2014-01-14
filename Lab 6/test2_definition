@@ -1,0 +1,5 @@
+{ name=direct, line_size = 128, entries = 1024, ways=1, policy=FIFO }
+{ name=full, line_size = 128, entries = 1024, ways=1024, policy=lfu }
+{ name=lfu, line_size = 128, entries = 1024, ways=4, policy=lfu }
+{ name=fifo, line_size = 128, entries = 1024, ways=4, policy=FIFO }
+{ name=random, line_size = 128, entries = 1024, ways=32, policy=random }

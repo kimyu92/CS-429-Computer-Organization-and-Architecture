@@ -384,10 +384,12 @@ Boolean evict_from_victim_cache(CDS *cds, cache_line *victim_line, memory_addres
         victim_cache_entry_index = Find_Victim_by_Replacement_Policy(cds->v, cache_address);
         victim_cache_entry = &(cds->v->c_line[victim_cache_entry_index]);
 
+        //Before writing inside into victim line
+        //If it is dirty, write it down
         if(victim_cache_entry->dirty)
             evict_dirty_line_from_cache(cds->v, victim_cache_entry);
 
-        //When is not find it in victim cache
+        //So, we can safely write the victim (base cache) into the victim cache
         if(!Found){
             victim_cache_entry->tag = cache_address;
             victim_cache_entry->valid = TRUE;
@@ -456,10 +458,15 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
 
             /* evict victim */
     	if (cache_entry->valid){
-            //Access victim cache
-            cds->v->number_total_cache_access += 1;
-            Found = evict_from_victim_cache(cds, cache_entry, cache_address, cache_entry_index, reference);
-            evict_from_cache(cds, cache_entry, cache_address);
+            if(cds->victim_cache_is_created == TRUE){
+                //Access victim cache
+                cds->v->number_total_cache_access += 1;
+                Found = evict_from_victim_cache(cds, cache_entry, cache_address, cache_entry_index, reference);
+                evict_from_cache(cds, cache_entry, cache_address);
+            }
+            else{
+                Found = evict_from_cache(cds, cache_entry, cache_address);
+            }
     	}
 
     	

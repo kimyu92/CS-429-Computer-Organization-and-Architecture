@@ -101,6 +101,7 @@ struct CDS
     struct CDS *next;  /* linked list of all the CDS */
 
     String      name;
+    Boolean     victim_cache_is_created;
 
     struct cache *c;
     struct cache *v;

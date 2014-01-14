@@ -126,7 +126,9 @@ void Print_Cache_Statistics_for_one_cds(CDS *cds)
             cds->number_of_type[MAT_STORE], memory_reference_type_name(MAT_STORE));
     
     Print_Cache_Statistics_for_one_cache(cds->c);
-    Print_Cache_Statistics_for_one_cache(cds->v);
+
+    if(cds->victim_cache_is_created == TRUE)
+        Print_Cache_Statistics_for_one_cache(cds->v);
     
     fprintf(stdout, "\n");
 }
@@ -153,19 +155,17 @@ void init_cache(CDS *cds)
 {
     /* we need one cache line for every entry */
     cds->c->c_line = CAST(cache_line *, calloc(cds->c->number_of_cache_entries, sizeof(cache_line)));
-    //initialize the cache
-    cds->v->c_line = CAST(cache_line *, calloc(cds->c->number_of_cache_entries, sizeof(cache_line)));
 }
 
 
 void Init_Caches(void)
 {
     CDS *cds = CDS_root;
-    while (cds != NULL)
-        {
-            init_cache(cds);
-            cds = cds->next;
-        }
+    
+    while (cds != NULL){
+        init_cache(cds);
+        cds = cds->next;
+    }
 }
 
 
@@ -217,7 +217,13 @@ void delete_cache(CDS *cds)
     /* we need one cache line for every entry */
     delete_one_cache(cds->c);
 
+    if(cds->victim_cache_is_created == TRUE)
+        delete_one_cache(cds->v);                   //free the cacheline
+
     free(cds->c);
+    if (cds->victim_cache_is_created == TRUE)
+        free(cds->v);                               //free cacheline
+
     free(cds->name);
     free(cds);
 }

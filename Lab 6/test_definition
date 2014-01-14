@@ -1,0 +1,6 @@
+{ name=direct, line_size = 64, entries = 256, ways=1, policy=lru }
+{ name=full, line_size = 64, entries = 256, ways=256, policy=lru }
+{ name=lru, line_size = 64, entries = 256, ways=4, policy=lru }
+{ name=lfu, line_size = 64, entries = 256, ways=4, policy=lfu }
+{ name=fifo, line_size = 64, entries = 256, ways=4, policy=FIFO }
+{ name=fifo, line_size = 64, entries = 256, ways=4, policy=FIFO, writethru = true }

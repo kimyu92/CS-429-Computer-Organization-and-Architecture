@@ -122,19 +122,20 @@ int get_key_value_pair(FILE *CDS_file, Token *key, Token *value)
 
     /* skip spacing, look for "," */
     c = skip_blanks(CDS_file);
-    if (c == EOF) return(EOF);
-    if ((c != ',') && (c != ';') && (c != '}'))
-        {
-            fprintf(stderr, "not key=value pair: %s %c\n", key->string, c);
-            return(EOF);
-        }
-    if (c == '}')
-        {
-            /* we have the last pair, terminated by a '}'.
-               put it back, so that this last pair is processed */
-            ungetc(c, CDS_file);
-            return(',');
-        }
+    if (c == EOF)
+        return(EOF);
+
+    if ((c != ',') && (c != ';') && (c != '}')){
+        fprintf(stderr, "not key=value pair: %s %c\n", key->string, c);
+        return(EOF);
+    }
+    
+    if (c == '}'){
+        /* we have the last pair, terminated by a '}'.
+            put it back, so that this last pair is processed */
+        ungetc(c, CDS_file);
+        return(',');
+    }
 
     return(c);
 }
@@ -233,11 +234,21 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
 
     //Look for victim cache
     if (strcasestr(key->string, "victim") != NULL){
-        int n = atoi(value->string);
-        
-        cds->v->name = remember_string(cds->name);
+        cds->victim_cache_is_created = TRUE;
 
+        //initialize the cache
+        cds->v = CAST(struct cache *,calloc(1,sizeof(struct cache)));
+        
+        int n = atoi(value->string);
         cds->v->number_of_cache_entries = n;                    //grab the number of entries    
+        //initialize the cacheline
+        cds->v->c_line = CAST(cache_line *, calloc(cds->c->number_of_cache_entries, sizeof(cache_line)));
+        
+        //Alternate to string cat
+        //In order to prevent nasty stuff for c->name
+        //Call either remember string or augment
+        cds->v->name = augment_name(cds->name, "victim cache");
+
         cds->v->replacement_policy = CRP_FIFO;                  //set it to FIFO
         cds->v->number_of_ways = n;
         cds->v->write_back = cds->c->write_back;
@@ -246,12 +257,11 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
     }
 
     /* look for line size */
-    if ((strcasestr(key->string, "decay") != NULL) && (strcasestr(key->string, "interval") != NULL))
-        {
-            int n = atoi(value->string);
-            cds->c->LFU_Decay_Interval = n;
-            return;
-        }
+    if ((strcasestr(key->string, "decay") != NULL) && (strcasestr(key->string, "interval") != NULL)){
+        int n = atoi(value->string);
+        cds->c->LFU_Decay_Interval = n;
+        return;
+    }
 
     fprintf(stderr, "don't understand %s = %s\n",key->string, value->string);
 } 
@@ -267,28 +277,28 @@ CDS *Read_CDS_file_entry(FILE *CDS_file)
     int c;
 
     c = skip_blanks(CDS_file);
-    while (c == '#')
-        {
-            c = skip_line(CDS_file);
-        }
-    if (c == EOF) return(NULL);
+    while (c == '#'){
+        c = skip_line(CDS_file);
+    }
+    
+    if (c == EOF)
+        return(NULL);
 
     /* Syntax for Cache Descriptions:  { key=value, key=value, ... } */
     /* So, we read a key and a value and define the field of the
        cds defined by the key to have the given value. */
 
-    if (c != '{')
-        {
-            fprintf(stderr, "Cache description should start with {, not %c\n", c);
-            return(NULL);
-        }
+    if (c != '{'){
+        fprintf(stderr, "Cache description should start with {, not %c\n", c);
+        return(NULL);
+    }
 
     /* starting a new cache description.  Get a structure,
        and fill in default values. */
     CDS *cds = CAST(CDS *,calloc(1,sizeof(CDS)));
     cds->name = remember_string("dummy");
     cds->c = CAST(struct cache *,calloc(1,sizeof(struct cache)));
-    cds->v = CAST(struct cache *,calloc(1,sizeof(struct cache)));
+    
 
     /* default values */
     cds->c->cache_line_size = 64;
@@ -301,16 +311,21 @@ CDS *Read_CDS_file_entry(FILE *CDS_file)
 
     Token *key = new_token();
     Token *value = new_token();
-    while (((c = get_key_value_pair(CDS_file, key, value)) != EOF) && (c != '}'))
-        {
-            define_key_value_pair(cds, key, value);
-        }
+    
+    while (((c = get_key_value_pair(CDS_file, key, value)) != EOF) && (c != '}')){
+        define_key_value_pair(cds, key, value);
+    }
+    
     delete_token(key);
     delete_token(value);
 
-    cds->c->name = remember_string(cds->name);
+    if(cds->victim_cache_is_created == TRUE)
+        cds->c->name = augment_name(cds->name, "main cache");
+    else
+        cds->c->name = remember_string(cds->name);
 
-    if (debug) debug_print_cds(cds);
+    if (debug)
+        debug_print_cds(cds);
     
     return(cds);
 }
@@ -321,33 +336,33 @@ CDS *Read_CDS_file_entry(FILE *CDS_file)
 /*                                                                   */
 /* ***************************************************************** */
 
-void Read_Cache_Descriptions(String CDS_file_name)
-{
+void Read_Cache_Descriptions(String CDS_file_name){
     FILE *CDS_file;
     CDS *cds;
 
     /* open input file */
     CDS_file = fopen(CDS_file_name, "r");
-    if (CDS_file == NULL)
-        {
-            fprintf (stderr,"Cannot open CDS file %s\n", CDS_file_name);
-        }
-    while ((cds = Read_CDS_file_entry(CDS_file)) != NULL)
-        {
-            /* we use a linked list for all the cache descriptions,
-               but we want to keep the list in the same order that
-               we read them in.  Bummer. */
-            if (CDS_root == NULL)
-                {
-                    CDS_root = cds;
-                }
-            else
-                {
-                    CDS *q = CDS_root;
-                    while (q->next != NULL) q = q->next;
-                    q->next = cds;
-                }
+    if (CDS_file == NULL){
+        fprintf (stderr,"Cannot open CDS file %s\n", CDS_file_name);
+    }
+    
+    while ((cds = Read_CDS_file_entry(CDS_file)) != NULL){
+        /* we use a linked list for all the cache descriptions,
+            but we want to keep the list in the same order that
+            we read them in.  Bummer. */
+            if (CDS_root == NULL){
+                CDS_root = cds;
+            }
+            else{
+                CDS *q = CDS_root;
+                while (q->next != NULL)
+                    q = q->next;
+                
+                q->next = cds;
+            }
+
             cds->next = NULL;
-        }
+    }
+
     fclose(CDS_file);
 }
