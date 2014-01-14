@@ -360,7 +360,63 @@ Boolean evict_from_cache(CDS *cds, cache_line *victim_line, memory_address cache
 /*                                                                   */
 /*                                                                   */
 /* ***************************************************************** */
+Boolean evict_from_victim_cache(CDS *cds, cache_line *victim_line, memory_address cache_address, int cache_entry_index, memory_reference *reference){
+    //here is where we search for the victim cache
+    Boolean Found = FALSE;
 
+    int victim_cache_entry_index = Search_Cache_For(cds->v, cache_address);
+
+    cache_line *cache_entry = &(cds->c->c_line[cache_entry_index]);
+    cache_line *victim_cache_entry = &(cds->v->c_line[victim_cache_entry_index]);
+
+    
+    //Find it in victim cache
+    if (victim_cache_entry_index >= 0){
+        Found = TRUE;
+
+        // if (cds->v->c_line[victim_cache_entry_index].valid && (cache_address == cds->v->c_line[victim_cache_entry_index].tag)){
+            //Swapping
+            swap_cache_lines(victim_cache_entry, cache_entry);
+        // }
+    }
+    else{
+
+        victim_cache_entry_index = Find_Victim_by_Replacement_Policy(cds->v, cache_address);
+        victim_cache_entry = &(cds->v->c_line[victim_cache_entry_index]);
+
+        if(victim_cache_entry->dirty)
+            evict_dirty_line_from_cache(cds->v, victim_cache_entry);
+
+        //When is not find it in victim cache
+        if(!Found){
+            victim_cache_entry->tag = cache_address;
+            victim_cache_entry->valid = TRUE;
+            victim_cache_entry->dirty = FALSE;
+
+            cds->v->c_line[victim_cache_entry_index] = cds->c->c_line[cache_entry_index];
+
+            //victim miss read
+            //Have to grab from the memory
+            cds->v->number_miss_reads += 1;
+        }
+
+    }
+
+
+    if (!Found)
+        Set_Replacement_Policy_Data(cds->number_of_memory_reference, cds->v, victim_cache_entry);
+    else
+        Update_Replacement_Policy_Data(cds->number_of_memory_reference, cds->v, victim_cache_entry);
+
+
+    return Found;
+
+}
+
+/* ***************************************************************** */
+/*                                                                   */
+/*                                                                   */
+/* ***************************************************************** */
 void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
 {
     Boolean Found = FALSE;
@@ -382,63 +438,11 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
     if (cache_entry_index >= 0){
         /* found it -- record cache hit */
     	Found = TRUE;
-    	if (debug) fprintf(debug_file, "%s: Found address 0x%08X in cache line %d\n", cds->name, 
+    	
+        if (debug) fprintf(debug_file, "%s: Found address 0x%08X in cache line %d\n", cds->name, 
     		reference->address, cache_entry_index);
     		cache_entry = &(cds->c->c_line[cache_entry_index]);
-
-    	//Move from bottom of this method to here
-        /* update reference specific info */
-    	if (reference->type == MAT_STORE){
-            /* If it's not write-back, then it is write-thru.
-               For write-thru, if it's a write, we write to memory. */
-        	if (!cds->c->write_back){
-        		cds->c->number_miss_writes += 1;
-        		if (debug) fprintf(debug_file, "%s: Write cache line 0x%08X thru to memory\n", cds->name,  cache_entry->tag);
-        	}
-        	else
-                /* For write-back, if it's a write, it's dirty. */
-        		cache_entry->dirty = TRUE;
-        }
-
-        //Move from bottom of this method to here
-        Update_Replacement_Policy_Data(cds->number_of_memory_reference, cds->c, cache_entry);
-       	return;
     }
-
-
-    //here is where we search for the victim cache
-    int victim_cache_entry_index = Search_Cache_For(cds->v, cache_address);
-   
-    if (victim_cache_entry_index >=0){
-    	Found = TRUE;
-    	fprintf(stdout, "LALALALALALA\n");
-        if (cds->v->c_line[victim_cache_entry_index].valid && (cache_address == cds->v->c_line[victim_cache_entry_index].tag)){
-            //found it
-            //Grab the index
-            int base_c = Find_Victim_by_Replacement_Policy(cds->c, cache_entry_index);
-            //Swapping
-            cache_line temp = cds->v->c_line[victim_cache_entry_index];
-            cds->v->c_line[victim_cache_entry_index] = cds->c->c_line[base_c];
-            cds->c->c_line[base_c] = temp;
-
-            cds->v->number_cache_hits += 1;
-
-            if (reference->type == MAT_STORE) {
-            /* If it's not write-back, then it is write-thru.
-            For write-thru, if it's a write, we write to memory. */
-            
-                if (!cds->v->write_back)
-                    cds->v->number_miss_writes += 1;
-                else
-                    /* For write-back, if it's a write, it's dirty. */
-                    cds->v->c_line[victim_cache_entry_index].dirty = TRUE;
-            }
-            Update_Replacement_Policy_Data(cds->number_of_memory_reference, cds->v, &(cds->v->c_line[victim_cache_entry_index]) );
-        }
-
-        return;
-    }
-    //no cache nor victim cache line
     else{
         /* Did not find it. */
     	Found = FALSE;
@@ -447,20 +451,15 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
     	cache_entry_index = Find_Victim_by_Replacement_Policy(cds->c, cache_address);
     	cache_entry = &(cds->c->c_line[cache_entry_index]);
 
-        cache_line *victim_cache_entry = NULL;
-        victim_cache_entry = &(cds->v->c_line[victim_cache_entry_index]);
+        
     	if (debug) fprintf(debug_file, "%s: Pick victim %d to replace\n", cds->name,  cache_entry_index);
 
             /* evict victim */
     	if (cache_entry->valid){
-            fprintf(stdout, "AAAAA \n");
-    		//evict_from_cache(cds, &(cds->v->c_line[victim_cache_entry_index]), victim_cache_entry_index);
-    		// cds->v->c_line[victim_cache_entry_index].tag = cache_address;
-            victim_cache_entry->tag = cache_address;
-            // cds->v->c_line[victim_cache_entry_index] = cds->c->c_line[cache_entry_index];
-            victim_cache_entry->valid = TRUE; 
-            // cds->v->c_line[victim_cache_entry_index].valid = TRUE;
-    		Found = evict_from_cache(cds, cache_entry, cache_address);
+            //Access victim cache
+            cds->v->number_total_cache_access += 1;
+            Found = evict_from_victim_cache(cds, cache_entry, cache_address, cache_entry_index, reference);
+            evict_from_cache(cds, cache_entry, cache_address);
     	}
 
     	
@@ -474,36 +473,22 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
     		if (debug) fprintf(debug_file, "%s: Read cache line 0x%08X into entry %d\n", cds->name,  cache_entry->tag, cache_entry_index);
     		cds->c->number_miss_reads += 1;
     	}
-
-    	if (reference->type == MAT_STORE){
-            /* If it's not write-back, then it is write-thru.
-               For write-thru, if it's a write, we write to memory. */
-    		if (!cds->c->write_back)
-    			cds->c->number_miss_writes += 1;
-    		else
-                /* For write-back, if it's a write, it's dirty. */
-    			cache_entry->dirty = TRUE;
-    	}
-
     }
 
-    // /* update reference specific info */
-    // if (reference->type == MAT_STORE) 
-    // {
-    //         /* If it's not write-back, then it is write-thru.
-    //            For write-thru, if it's a write, we write to memory. */
-    //         if (!cds->c->write_back)
-    //             {
-    //                 cds->c->number_miss_writes += 1;
-    //                 if (debug) fprintf(debug_file, "%s: Write cache line 0x%08X thru to memory\n", cds->name,  cache_entry->tag);
-    //             }
-    //         else
-    //             /* For write-back, if it's a write, it's dirty. */
-    //             cache_entry->dirty = TRUE;
-    // }
+    /* update reference specific info */
+    if (reference->type == MAT_STORE) {
+        /* If it's not write-back, then it is write-thru.
+        For write-thru, if it's a write, we write to memory. */
+        
+        if (!cds->c->write_back){
+            cds->c->number_miss_writes += 1;
+            if (debug) fprintf(debug_file, "%s: Write cache line 0x%08X thru to memory\n", cds->name,  cache_entry->tag);
+        }
+        else
+            /* For write-back, if it's a write, it's dirty. */
+            cache_entry->dirty = TRUE;
+    }
 
-
-    
     
     if (!Found)
         Set_Replacement_Policy_Data(cds->number_of_memory_reference, cds->c, cache_entry);
@@ -512,41 +497,39 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
 }
 
 
-/* ***************************************************************** */
-/*                                                                   */
-/*                                                                   */
-/* ***************************************************************** */
 
+/* ***************************************************************** */
+/*                                                                   */
+/*                                                                   */
+/* ***************************************************************** */
 void Simulate_Reference_to_Memory(CDS *cds, memory_reference *reference)
 {
     cds->number_of_memory_reference += 1;
     cds->number_of_type[reference->type] += 1;
 
     /* check if the entire reference fits into just one cache line */
-    if (Base_Cache_Address(cds->c, reference->address) == Base_Cache_Address(cds->c, reference->address + reference->length -1))
-        {
-            Simulate_Reference_to_Cache_Line(cds, reference);
-        }
-    else
-        {
-            /* reference spans two cache lines.  Convert it to two
-               references: the first cache line, and the second cache line */
-            memory_reference reference1;
-            memory_reference reference2;
-            /* easiest to compute the second part first */
-            reference2.type = reference->type;
-            reference2.address = Base_Cache_Address(cds->c, reference->address + reference->length -1);
-            reference2.length = reference->address + reference->length - reference2.address;
-            reference1.type = reference->type;
-            reference1.address = reference->address;
-            reference1.length = reference->length - reference2.length;
+    if (Base_Cache_Address(cds->c, reference->address) == Base_Cache_Address(cds->c, reference->address + reference->length -1)){
+        Simulate_Reference_to_Cache_Line(cds, reference);
+    }
+    else{
+        /* reference spans two cache lines.  Convert it to two
+        references: the first cache line, and the second cache line */
+        memory_reference reference1;
+        memory_reference reference2;
+        
+        /* easiest to compute the second part first */
+        reference2.type = reference->type;
+        reference2.address = Base_Cache_Address(cds->c, reference->address + reference->length -1);
+        reference2.length = reference->address + reference->length - reference2.address;
+        reference1.type = reference->type;
+        reference1.address = reference->address;
+        reference1.length = reference->length - reference2.length;
 
-            /* but we do the references first, then second */
-            Simulate_Reference_to_Cache_Line(cds, &reference1);
-            Simulate_Reference_to_Cache_Line(cds, &reference2);
-        }
+        /* but we do the references first, then second */
+        Simulate_Reference_to_Cache_Line(cds, &reference1);
+        Simulate_Reference_to_Cache_Line(cds, &reference2);
+    }
 }
-
 
 
 
@@ -557,46 +540,42 @@ void Simulate_Reference_to_Memory(CDS *cds, memory_reference *reference)
 
 /* read each input line, and then simulate that reference on each
    cache. */
-
-void Simulate_Caches(String trace_file_name)
-{
+void Simulate_Caches(String trace_file_name){
     FILE *trace_file;
     memory_reference reference;
 
     /* open input file */
     trace_file = fopen(trace_file_name, "r");
-    if (trace_file == NULL)
-        {
-            fprintf (stderr,"Cannot open trace file %s\n", trace_file_name);
-            exit(1);
-        }
+    if (trace_file == NULL){
+        fprintf (stderr,"Cannot open trace file %s\n", trace_file_name);
+        exit(1);
+    }
 
     Init_caches_for_trace();
 
-    while (Read_trace_file_line(trace_file, &reference) != EOF)
-        {
-            CDS *cds = CDS_root;
-            while (cds != NULL)
-                {
-                    Simulate_Reference_to_Memory(cds, &reference);
-                    cds = cds->next;
-                }
+    while (Read_trace_file_line(trace_file, &reference) != EOF){
+        CDS *cds = CDS_root;
+        
+        while (cds != NULL){
+            Simulate_Reference_to_Memory(cds, &reference);
+            cds = cds->next;
         }
+    }
+
     fclose(trace_file);
 }
 
 
-int number_dirty_lines(struct cache *c)
-{
+int number_dirty_lines(struct cache *c){
     int n = 0;
     int i;
-    for (i = 0; i < c->number_of_cache_entries; i++)
-        {
-            if (c->c_line[i].dirty)
-                {
-                    n += 1;
-                    if (debug) fprintf(debug_file, "%s: Cache Line 0x%08X is dirty\n", c->name, c->c_line[i].tag);
-                }
+    
+    for (i = 0; i < c->number_of_cache_entries; i++){
+        if (c->c_line[i].dirty){
+            n += 1;
+            if (debug) fprintf(debug_file, "%s: Cache Line 0x%08X is dirty\n", c->name, c->c_line[i].tag);
         }
+    }
+    
     return(n);
 }
