@@ -98,4 +98,3 @@ Time 165: PC=0x11F instruction = 0x39C (TAD I), rA = 0x000, rL = 1
 Time 166: PC=0x120 instruction = 0xF28 (SZA RSS), rA = 0x000, rL = 1
 Time 168: PC=0x121 instruction = 0xB9D (JMP I), rA = 0x000, rL = 1
 Time 169: PC=0x11B instruction = 0xF02 (HLT), rA = 0x000, rL = 1
-DONE
