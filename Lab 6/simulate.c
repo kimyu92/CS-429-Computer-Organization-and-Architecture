@@ -348,10 +348,9 @@ void swap_cache_lines(cache_line *a, cache_line *b)
 Boolean evict_from_cache(CDS *cds, cache_line *victim_line, memory_address cache_address)
 {
     /* if victim is dirty, note that this dirty line is being evicted */
-    if (victim_line->dirty)
-        {
-            evict_dirty_line_from_cache(cds->c, victim_line);
-        }
+    if (victim_line->dirty){
+        evict_dirty_line_from_cache(cds->c, victim_line);
+    }
             
     return(FALSE);
 }
@@ -444,14 +443,25 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
         /* Did not find it. */
     	Found = FALSE;
 
-            /* Choose a victim from the set */
+        /* Choose a victim from the set */
     	cache_entry_index = Find_Victim_by_Replacement_Policy(cds->c, cache_address);
     	cache_entry = &(cds->c->c_line[cache_entry_index]);
+
+        cache_line *victim_cache_entry = NULL;
+        victim_cache_entry = &(cds->v->c_line[victim_cache_entry_index]);
     	if (debug) fprintf(debug_file, "%s: Pick victim %d to replace\n", cds->name,  cache_entry_index);
 
             /* evict victim */
-    	if (cache_entry->valid)
+    	if (cache_entry->valid){
+            fprintf(stdout, "AAAAA \n");
+    		//evict_from_cache(cds, &(cds->v->c_line[victim_cache_entry_index]), victim_cache_entry_index);
+    		// cds->v->c_line[victim_cache_entry_index].tag = cache_address;
+            victim_cache_entry->tag = cache_address;
+            // cds->v->c_line[victim_cache_entry_index] = cds->c->c_line[cache_entry_index];
+            victim_cache_entry->valid = TRUE; 
+            // cds->v->c_line[victim_cache_entry_index].valid = TRUE;
     		Found = evict_from_cache(cds, cache_entry, cache_address);
+    	}
 
     	
     	if (!Found){

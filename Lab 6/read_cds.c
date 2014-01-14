@@ -239,7 +239,7 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
 
         cds->v->number_of_cache_entries = n;                    //grab the number of entries    
         cds->v->replacement_policy = CRP_FIFO;                  //set it to FIFO
-        cds->v->number_of_ways = cds->c->number_of_ways;
+        cds->v->number_of_ways = n;
         cds->v->write_back = cds->c->write_back;
         cds->v->cache_line_size = cds->c->cache_line_size;      //grab number of bytes per victim cache line
         return;
