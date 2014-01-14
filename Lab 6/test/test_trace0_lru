@@ -1,0 +1,5 @@
+      200119 addresses (149800 Fetch, 38425 Load, 11894 Store)
+lru: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LRU
+lru: 204244 accesses, 202606 hits (99%), 1638 misses, 1638 miss reads, 111 miss writes
+lru: 99 dirty cache lines remain
+

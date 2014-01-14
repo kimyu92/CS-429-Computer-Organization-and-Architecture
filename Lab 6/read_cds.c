@@ -157,7 +157,6 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
         {
             int n = atoi(value->string);
             cds->c->cache_line_size = n;
-            cds->v->cache_line_size = n;    //grab number of bytes per victim cache line
             return;
         }
 
@@ -234,8 +233,15 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
 
     //Look for victim cache
     if (strcasestr(key->string, "victim") != NULL){
-        cds->v->number_of_cache_entries = atoi(value->string);  //grab the number of entries    
+        int n = atoi(value->string);
+        
+        cds->v->name = remember_string(cds->name);
+
+        cds->v->number_of_cache_entries = n;                    //grab the number of entries    
         cds->v->replacement_policy = CRP_FIFO;                  //set it to FIFO
+        cds->v->number_of_ways = cds->c->number_of_ways;
+        cds->v->write_back = cds->c->write_back;
+        cds->v->cache_line_size = cds->c->cache_line_size;      //grab number of bytes per victim cache line
         return;
     }
 
@@ -282,6 +288,7 @@ CDS *Read_CDS_file_entry(FILE *CDS_file)
     CDS *cds = CAST(CDS *,calloc(1,sizeof(CDS)));
     cds->name = remember_string("dummy");
     cds->c = CAST(struct cache *,calloc(1,sizeof(struct cache)));
+    cds->v = CAST(struct cache *,calloc(1,sizeof(struct cache)));
 
     /* default values */
     cds->c->cache_line_size = 64;

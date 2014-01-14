@@ -1,0 +1,105 @@
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu05: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=50000)
+lfu05: 236262 accesses, 235674 hits (99%), 588 misses, 588 miss reads, 8 miss writes
+lfu05: 66 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu10: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=100000)
+lfu10: 236262 accesses, 235666 hits (99%), 596 misses, 596 miss reads, 10 miss writes
+lfu10: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu15: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=150000)
+lfu15: 236262 accesses, 235664 hits (99%), 598 misses, 598 miss reads, 10 miss writes
+lfu15: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu20: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=200000)
+lfu20: 236262 accesses, 235660 hits (99%), 602 misses, 602 miss reads, 10 miss writes
+lfu20: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu25: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=250000)
+lfu25: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu25: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu30: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=300000)
+lfu30: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu30: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu35: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=350000)
+lfu35: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu35: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu40: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=400000)
+lfu40: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu40: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu45: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=450000)
+lfu45: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu45: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu50: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=500000)
+lfu50: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu50: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu55: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=550000)
+lfu55: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu55: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu60: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=600000)
+lfu60: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu60: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu65: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=650000)
+lfu65: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu65: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu70: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=700000)
+lfu70: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu70: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu75: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=750000)
+lfu75: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu75: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu80: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=800000)
+lfu80: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu80: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu85: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=850000)
+lfu85: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu85: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu90: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=900000)
+lfu90: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu90: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu95: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=950000)
+lfu95: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu95: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu10: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=1000000)
+lfu10: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu10: 64 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu100: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=10000000)
+lfu100: 236262 accesses, 235657 hits (99%), 605 misses, 605 miss reads, 10 miss writes
+lfu100: 64 dirty cache lines remain
+

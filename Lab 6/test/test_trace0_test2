@@ -1,0 +1,25 @@
+      200119 addresses (149800 Fetch, 38425 Load, 11894 Store)
+direct: 1024 entries of lines of 128 bytes; direct-mapped, write-back, FIFO
+direct: 204244 accesses, 201151 hits (98%), 3093 misses, 3093 miss reads, 597 miss writes
+direct: 73 dirty cache lines remain
+
+      200119 addresses (149800 Fetch, 38425 Load, 11894 Store)
+full: 1024 entries of lines of 128 bytes; fully associative, write-back, LFU (decay=200000)
+full: 204244 accesses, 199640 hits (97%), 4604 misses, 4604 miss reads, 465 miss writes
+full: 138 dirty cache lines remain
+
+      200119 addresses (149800 Fetch, 38425 Load, 11894 Store)
+lfu: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=200000)
+lfu: 204244 accesses, 202405 hits (99%), 1839 misses, 1839 miss reads, 122 miss writes
+lfu: 100 dirty cache lines remain
+
+      200119 addresses (149800 Fetch, 38425 Load, 11894 Store)
+fifo: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, FIFO
+fifo: 204244 accesses, 202503 hits (99%), 1741 misses, 1741 miss reads, 173 miss writes
+fifo: 73 dirty cache lines remain
+
+      200119 addresses (149800 Fetch, 38425 Load, 11894 Store)
+random: 1024 entries of lines of 128 bytes; 32 sets of 32 ways, write-back, RANDOM
+random: 204244 accesses, 202665 hits (99%), 1579 misses, 1579 miss reads, 71 miss writes
+random: 135 dirty cache lines remain
+

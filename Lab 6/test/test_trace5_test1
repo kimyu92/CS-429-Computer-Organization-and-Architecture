@@ -1,0 +1,30 @@
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+direct: 1024 entries of lines of 128 bytes; direct-mapped, write-back, LRU
+direct: 236262 accesses, 234735 hits (99%), 1527 misses, 1527 miss reads, 263 miss writes
+direct: 50 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+full: 1024 entries of lines of 128 bytes; fully associative, write-back, LRU
+full: 236262 accesses, 235695 hits (99%), 567 misses, 567 miss reads, 0 miss writes
+full: 70 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lru: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LRU
+lru: 236262 accesses, 235694 hits (99%), 568 misses, 568 miss reads, 4 miss writes
+lru: 66 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+lfu: 1024 entries of lines of 128 bytes; 128 sets of 8 ways, write-back, LFU (decay=200000)
+lfu: 236262 accesses, 235695 hits (99%), 567 misses, 567 miss reads, 0 miss writes
+lfu: 70 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+fifo: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, FIFO
+fifo: 236262 accesses, 235691 hits (99%), 571 misses, 571 miss reads, 7 miss writes
+fifo: 65 dirty cache lines remain
+
+      233772 addresses (160099 Fetch, 51572 Load, 22101 Store)
+random: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, RANDOM
+random: 236262 accesses, 235682 hits (99%), 580 misses, 580 miss reads, 3 miss writes
+random: 67 dirty cache lines remain
+

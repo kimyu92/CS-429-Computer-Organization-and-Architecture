@@ -1,0 +1,25 @@
+      400000 addresses (288259 Fetch, 80098 Load, 31643 Store)
+direct: 1024 entries of lines of 128 bytes; direct-mapped, write-back, FIFO
+direct: 406028 accesses, 401360 hits (98%), 4668 misses, 4668 miss reads, 1104 miss writes
+direct: 119 dirty cache lines remain
+
+      400000 addresses (288259 Fetch, 80098 Load, 31643 Store)
+full: 1024 entries of lines of 128 bytes; fully associative, write-back, LFU (decay=200000)
+full: 406028 accesses, 382261 hits (94%), 23767 misses, 23767 miss reads, 3012 miss writes
+full: 188 dirty cache lines remain
+
+      400000 addresses (288259 Fetch, 80098 Load, 31643 Store)
+lfu: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, LFU (decay=200000)
+lfu: 406028 accesses, 403822 hits (99%), 2206 misses, 2206 miss reads, 131 miss writes
+lfu: 170 dirty cache lines remain
+
+      400000 addresses (288259 Fetch, 80098 Load, 31643 Store)
+fifo: 1024 entries of lines of 128 bytes; 256 sets of 4 ways, write-back, FIFO
+fifo: 406028 accesses, 404067 hits (99%), 1961 misses, 1961 miss reads, 175 miss writes
+fifo: 146 dirty cache lines remain
+
+      400000 addresses (288259 Fetch, 80098 Load, 31643 Store)
+random: 1024 entries of lines of 128 bytes; 32 sets of 32 ways, write-back, RANDOM
+random: 406028 accesses, 404198 hits (99%), 1830 misses, 1830 miss reads, 127 miss writes
+random: 164 dirty cache lines remain
+
