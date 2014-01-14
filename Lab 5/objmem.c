@@ -70,13 +70,11 @@ INST Fetch_Object_Code(Address addr)
     return(inst);
 }
 
-FILE * pFile;
+
 int howManyBytes = 0;
 
 void Output_Object_Code(void)
 {
-  
-  pFile = fopen("abc.obj", "wb");
 
   int obj_1 = 0x4f;
   int obj_2 = 0x42;
@@ -140,7 +138,7 @@ void Output_Object_Code(void)
   }
   
   // printf("%d\n", howManyBytes);
-  fclose(pFile);
+  
 }
 
 

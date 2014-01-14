@@ -27,7 +27,8 @@ typedef char *STRING;
 Boolean debug;
 
 FILE *input;
-FILE *output;
+//FILE *output;
+FILE *pFile; //for object output
 
 
 STRING remember_string(const STRING name);

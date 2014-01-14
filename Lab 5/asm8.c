@@ -213,25 +213,20 @@ void do_opcode(Token *t)
                     device = t->value;
                 instruction = instruction | ((device & 0x3F) << 3);
 
-                //Added
                 get_token(t);
-                
-                if (t->type == Tcolon){
-                    get_token(t);
-                }
 
-                // fprintf(stderr,"%d\n", t->type);
+                if(t->type == Tcolon)
+                    get_token(t);
+                
                 if (t->type != Tconstant)
                     {
                         number_of_errors += 1;
-                        fprintf(stderr, " %d", t->type);
                         fprintf(stderr, "IOT function operand must be constant\n");
                     }
                 else
                     function = t->value;
                 instruction = instruction | (function & 0x3);
 
-                fprintf(stderr,"%d\n", t->type);
                 /* get the next token, for the return */
                 get_token(t);
                 break;
@@ -265,9 +260,10 @@ void do_opcode(Token *t)
                 }
             else if (t->type == Tsymbol)
                 {
-                    if ((t->sy == NULL) || (t->sy->fr != NULL)){
+                    if ((t->sy == NULL) || (t->sy->fr != NULL))
+                        {
                             forward_reference(t->token_string, line_number, location_counter, TRUE);
-                    }
+                        }
                     entry_point = t->value;
                 }
             else
@@ -302,7 +298,7 @@ void Assemble_File(STRING name)
             /* get the token to process */
             get_token(&t1);
 
-            /* look at the next token, is this a label ? */ 
+            /* look at the next token, is this a label ? */
             enum Token_type t = peek_token_type();
             while (t == Tcolon)
                 {
@@ -345,10 +341,11 @@ void Assemble_File(STRING name)
                         case Tconstant:
                             /* if we already have good stuff here, why do we have another constant
                                or symbol ? */
-                            if (good_stuff){
-                                number_of_errors += 1;
-                                fprintf(stderr, "illegal token at line %d\n", line_number);
-                            }
+                            if (good_stuff)
+                                {
+                                    number_of_errors += 1;
+                                    fprintf(stderr, "illegal token at line %d\n", line_number);
+                                }
 
                             good_stuff = TRUE;
                             instruction = (t1.value & 0xFFF);
@@ -436,6 +433,7 @@ char *change_file_name(STRING name, STRING old_ext, STRING new_ext)
             /* and add the part after that to the new string */
             strcat(oldxs, &p[strlen(old_ext)]);
         }
+        
     return(news);
 }
 
@@ -467,9 +465,9 @@ int main(int argc, STRING *argv)
                             fprintf (stderr, "Can't open %s\n",*argv);
                             continue;
                         }
-                    char *out_filename = change_file_name(*argv, ".asm", ".out");
-                    output = fopen(out_filename,"w");
-                    if (output == NULL)
+                    char *out_filename = change_file_name(*argv, ".asm", ".obj");
+                    pFile = fopen(out_filename,"w");
+                    if (pFile == NULL)
                         {
                             fprintf (stderr, "Can't open %s\n",out_filename);
                             continue;
@@ -485,12 +483,10 @@ int main(int argc, STRING *argv)
                     Output_Object_Code();
 
                     fclose(input);
-                    fclose(output);
+                    fclose(pFile);
                     free(out_filename);
                 }
         }
 
     exit(0);
 }
-
-

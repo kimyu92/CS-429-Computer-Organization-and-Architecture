@@ -93,7 +93,7 @@ enum Token_type peek_token_type(void)
 {
     /* skip any leading spaces */
     while( (token_index < input_line_length) && 
-           (isspace(input_buffer[token_index]))  ){
+           (isspace(input_buffer[token_index])) ){
             token_index += 1;
     }
 
