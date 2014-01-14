@@ -19,13 +19,20 @@ typedef char *STRING;
 
 static short my_memory[4096];
 int program_counter = 0;
-int cycle_count = 0;
+int _instruct = 0;
+long long cycle_count = 0;
 
+STRING instructions;
 
 int registerA = 0;
 int linkBit = 0;
 Boolean skipFlag = FALSE;
+Boolean IOTFlag = FALSE;
 
+Boolean HALT = FALSE;
+
+
+//Functions Prototype
 Boolean checkFile();
 Boolean check_char_within_range(char receivedChar);
 
@@ -37,18 +44,19 @@ void load_into_memory();
 char convert_A_to_F_num(char temp);
 
 //Fetching
-Boolean decide_instruction_sets();
+void decide_instruction_sets();
 
 int compute_effectiveAddr();
 void first_fetch_sets();
-Boolean second_fetch_sets();
+void second_fetch_sets();
 void third_fetch_sets();
 
 
+//Printing the result
+void printTheResult();
+
 
 int main(int argc, char **argv){
-	Boolean verbose = TRUE;
-
 	if(argc > 3)
 		return 0;
 	//Non-verbose mode
@@ -191,6 +199,32 @@ Boolean checkFile(){
 }
 
 
+
+void process(){
+	load_into_memory();
+	int debug = 0;
+
+	while (HALT == FALSE ){
+		instructions = (STRING) malloc( (sizeof(char)) * 29 );
+
+		decide_instruction_sets();
+		free(instructions);
+
+		program_counter++;
+
+		if(skipFlag == TRUE)
+			program_counter++;
+
+
+		if(debug == 7)
+			break;
+		else
+			debug++;
+	}
+}
+
+
+
 Boolean check_char_within_range(char receivedChar){
 	if( (receivedChar >= 48 && receivedChar <= 57 )
 		|| (receivedChar >= 65 && receivedChar <= 70 ) )
@@ -200,29 +234,6 @@ Boolean check_char_within_range(char receivedChar){
 }
 
 
-
-void process(){
-	load_into_memory();
-	if (decide_instruction_sets() == FALSE){
-		program_counter++;
-	}
-
-	if (decide_instruction_sets() == FALSE){
-		program_counter++;
-	}
-
-	if (decide_instruction_sets() == FALSE){
-		program_counter++;
-	}
-
-	if (decide_instruction_sets() == FALSE){
-		program_counter++;
-	}
-
-	if (decide_instruction_sets() == FALSE){
-		program_counter++;
-	}
-}
 
 void load_into_memory(){
 	int temp;
@@ -316,6 +327,8 @@ void load_into_memory(){
 
 }
 
+
+
 char convert_A_to_F_num(char temp){
 	switch(temp){
 		case 'A':
@@ -333,44 +346,70 @@ char convert_A_to_F_num(char temp){
 		default:
 			return temp;
 	}
-
 }
 
 
-Boolean decide_instruction_sets(){
-	int opcode = program_counter;
-	Boolean HALT = FALSE;
+
+void decide_instruction_sets(){
+	int opcode = my_memory[program_counter];
 
 	opcode >>= 9;
-	opcode &= 0xF;
+	opcode &= 0x7;
+
+	//printf("\n Whaat is this opcode : %d\n", opcode);
 
 	switch(opcode){
 		case 0:
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
+			strcat(instructions, "AND");
 			first_fetch_sets();
+			printTheResult();	
+			break;
+		case 1:
+			strcat(instructions, "TAD");
+			printf("%s\n", instructions);
+			first_fetch_sets();
+			printTheResult();
+			break;
+		case 2:
+			strcat(instructions, "ISZ");
+			first_fetch_sets();
+			printTheResult();
+			break;
+		case 3:
+			strcat(instructions, "DCA");
+			first_fetch_sets();
+			printTheResult();
+			break;
+		case 4:
+			strcat(instructions, "JMS");
+			first_fetch_sets();
+			printTheResult();
+			break;
+		case 5:
+			strcat(instructions, "JMP");
+			first_fetch_sets();
+			printTheResult();
 			break;
 		case 7: //111
-			if (second_fetch_sets())
-				HALT = TRUE;
+			second_fetch_sets();
+			printTheResult();
 			break;
 		case 6: //110
 			third_fetch_sets();
+			printTheResult();
 			break;
 	}
-
-	return HALT;
 }
 
 
 
 void first_fetch_sets(){
 	int effectiveAddress = compute_effectiveAddr();
-	int insturction = my_memory[program_counter];
-	int opcode = my_memory[program_counter]; 
+	int opcode = my_memory[program_counter];
+
+	_instruct = my_memory[program_counter]; 
+
+	//printf("%03X\n", _instruct);
 
 	opcode >>= 9;
 
@@ -380,7 +419,8 @@ void first_fetch_sets(){
 			cycle_count+=2;
 			break;
 		case 1:
-			registerA += effectiveAddress;
+			registerA |= effectiveAddress;
+			registerA &= 0xFFF;
 			cycle_count+=2;
 			break;
 		case 2:
@@ -426,12 +466,17 @@ int compute_effectiveAddr(){
 
 	mask = 1 << 11 >> 4;
 	if (checkingZC == 0){
-		effectiveAddress = my_memory[program_counter] & ~mask;
+		effectiveAddress = my_memory[program_counter] & (~mask);
 	}
 	else if(checkingZC == 1){
 		effectiveAddress = (program_counter & mask);
-		effectiveAddress |= (my_memory[program_counter] & ~mask);
+		effectiveAddress |= (my_memory[program_counter] & (~mask) );
 	}
+
+	//addr:      000001101001
+	//content:   001001110101
+	//					10001
+	//			 001001110101
 
 	checkingDI = my_memory[program_counter];
 	checkingDI >>= 8;
@@ -440,15 +485,15 @@ int compute_effectiveAddr(){
 	if(checkingDI == 1)
 		effectiveAddress = my_memory[effectiveAddress];
 
-	printf("This is cool %d\n", effectiveAddress);
+	if(effectiveAddress != 0)
+		printf("This is cool %d\n", effectiveAddress);
+	
 	return effectiveAddress;
 }
 
 
 
-Boolean second_fetch_sets(){
-	Boolean HALT = FALSE;
-	int insturction = my_memory[program_counter];
+void second_fetch_sets(){
 	int checkGroup = my_memory[program_counter];
 	
 	int CLA = 	my_memory[program_counter];
@@ -466,9 +511,11 @@ Boolean second_fetch_sets(){
 	int RSS = my_memory[program_counter];
 	int OSR = my_memory[program_counter];
 	int HLT = my_memory[program_counter];
-
 	//Swap for Rotation
 	int swap;
+
+	//Update the instruction view
+	_instruct = my_memory[program_counter];
 
 	//Get the Group No.
 	checkGroup >>=8;
@@ -504,26 +551,31 @@ Boolean second_fetch_sets(){
 		if (CLA == 1){
 			//Clear both the A register
 			registerA = 0;
+			strcat(instructions, "CLA");
 		}
 
 		if (CLL == 1){
 			//Clear the Link bit
 			linkBit = 0;
+			strcat(instructions, "CLL");
 		}
 		
 		if(CMA == 1){
 			//Complement the A register (bit by bit, change 1 to 0 and 0 to 1).
 			registerA = ~registerA;
+			strcat(instructions, "CMA");
 		}
 		
 		if (CML == 1){
 			//Complement the Link bit. 
 			linkBit = ~linkBit;
+			strcat(instructions, "CML");
 		}
 		
 		if (IAC == 1){
 			//two's complement
 			registerA++;
+			strcat(instructions, "IAC");
 		}
 		
 		if (RAR == 1){
@@ -548,6 +600,8 @@ Boolean second_fetch_sets(){
 				registerA |= (linkBit << 11);
 				linkBit = swap  & 0x1;
 			}
+
+			strcat(instructions, "RAR");
 		}
 		
 		if (RAL == 1){
@@ -555,24 +609,24 @@ Boolean second_fetch_sets(){
 			//1bit
 			if(rotate == 0){
 				swap = registerA;
-				registerA <= 11;
+				registerA <<= 11;
 				registerA |= linkBit;
 				linkBit = (swap >> 11)  & 0x1;
 			}
 			//2bit
 			else{
 				swap = registerA;
-				registerA <= 11;
+				registerA <<= 11;
 				registerA |= linkBit;
 				linkBit = (swap >> 11)  & 0x1;
 
 				swap = registerA;
-				registerA <= 11;
+				registerA <<= 11;
 				registerA |= linkBit;
 				linkBit = (swap >> 11)  & 0x1;
 			}
 		}
-
+		strcat(instructions, "RAL");
 	}
 
 
@@ -603,6 +657,8 @@ Boolean second_fetch_sets(){
 		if (SMA == 1){
 			if (  ((registerA >> 11) & 0x1) == 1 )
 				skipFlag = TRUE;
+
+			strcat(instructions, "SMA");
 		}
 
 		//Skip on Zero
@@ -610,6 +666,8 @@ Boolean second_fetch_sets(){
 			if (registerA == 0){
 				skipFlag = TRUE;
 			}
+
+			strcat(instructions, "SZA");
 		}
 
 		//Skip on Nonzero Link.
@@ -617,6 +675,8 @@ Boolean second_fetch_sets(){
 			if (linkBit == 1){
 				skipFlag = TRUE;
 			}
+
+			strcat(instructions, "SNL");
 		}
 
 
@@ -628,11 +688,15 @@ Boolean second_fetch_sets(){
 		//Reverse Skip Sense
 		if(RSS == 1){
 			skipFlag = !skipFlag;
+
+			strcat(instructions, "RSS");
 		}
 
 		//Clear both the A register
 		if (CLA == 1){
 			registerA = 0;
+
+			strcat(instructions, "CLA");
 		}
 
 		//Treat it as NOP
@@ -640,15 +704,55 @@ Boolean second_fetch_sets(){
 		if(OSR == 1){
 		}
 
-		if(HLT == 1)
+		if(HLT == 1){
 			HALT = TRUE;
+
+			strcat(instructions, "HLT");
+		}
 	}
-
-
-	return HALT;
 }
 
 
+
 void third_fetch_sets(){
+	//If the device is 3, do a getchar() to read a character from standard input and put that character in the A register. 
+	//If the device is 4, take the low-order 8 bits from the A register and output it as an ASCII character to standard output (putchar()). 
+	//Assume these IOT instructions take 1 cycle.
+	int instruction = my_memory[program_counter];
+	int device = my_memory[program_counter];
+	int function3bits = my_memory[program_counter];
+
+	device >>= 3;
+	device &= 0x3F;
+
+	function3bits &= 0x7;
+
+	if(device == 3){
+		registerA = getc(stdin);
+	}
+	else if (device == 4){
+		putchar(registerA & 0xFF);
+		//fprintf(stderr, "Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", ...);
+	}
+	else{
+		HALT = TRUE;
+	}
+
+}
+
+
+
+void printTheResult(){
+
+	printf("Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", 
+			cycle_count, program_counter, _instruct, instructions, registerA, linkBit);
+}
+
+
+
+void instruction_cat(STRING thisInstruction){
+
+
+
 
 }
