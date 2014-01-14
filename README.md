@@ -1,4 +1,5 @@
-# CS 429:  Computer Organization and Architecture
+## CS 429:  Computer Organization and Architecture
+Fall 2013
 
 ## Course Syllabus:
 * [Click here](https://github.com/kimyu92/CS-429-Computer-Organization-and-Architecture/blob/master/course_overview.pdf)
