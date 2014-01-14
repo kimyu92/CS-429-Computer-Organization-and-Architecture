@@ -470,7 +470,7 @@ int main(int argc, STRING *argv)
                             fprintf (stderr, "Can't open %s\n",*argv);
                             continue;
                         }
-                    char *out_filename = change_file_name(*argv, ".asm", ".obj");
+                    char *out_filename = change_file_name(*argv, ".asm", ".out");
                     pFile = fopen(out_filename,"w");
                     if (pFile == NULL)
                         {

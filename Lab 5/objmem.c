@@ -75,6 +75,8 @@ INST Fetch_Object_Code(Address addr)
 
 
 int howManyBytes = 0;
+Boolean last = FALSE;
+
 
 void Output_Object_Code(void)
 {
@@ -104,21 +106,35 @@ void Output_Object_Code(void)
   int endIndex;
   int totalblock;
   int block_1;
+  int balance;
 
   for (i = 0; i < 4096; i++){
     if (defined[i]){
       endIndex = get_the_block(i);
 
-      totalblock = endIndex - i;
-      totalblock += 1;
-      totalblock *= 2;
-      totalblock += 1;
+      //Calculate block
+      totalblock = endIndex - i; //end - start    eg 5 -0 = 5
+      totalblock += 1; //plus one back            the ans is 6
+      totalblock *= 2; //two bytes
+      totalblock += 1; //block itself 0xff is max
+
+      //total = max
+      if (totalblock > 0xff ){
+        balance = totalblock - 0xff;
+
+        totalblock = 0xff;
+        endIndex -= balance;
+        last = TRUE;
+      }
+      
+      
 
       block_1 = totalblock;
 
       fprintf(pFile, "%c", block_1);
       howManyBytes+=2;
 
+      //Passing the index
       write_the_block(i, endIndex);
 
       i = endIndex;
@@ -174,6 +190,17 @@ void write_the_block(int startIndex, int endIndex){
     howManyBytes+=2;
     
     i++;
+  }
+
+  if(last == TRUE){
+
+    val_1 = (memory[endIndex] >> 6) & 0x3F;
+    val_2 = memory[endIndex] & 0x3F;
+
+    fprintf(pFile, "%c", val_1);
+    fprintf(pFile, "%c", val_2);
+
+    last = FALSE;
   }
 
 }
