@@ -110,7 +110,7 @@ void Output_Object_Code(void)
       // if(totalblock ==9)
       //   fprintf(stderr,"%d\n", totalblock);
       //Write size of block
-      block_1 = totalblock & 0x3F;
+      block_1 = totalblock;
 
       fprintf(pFile, "%02x", block_1);
       howManyBytes+=2;
@@ -137,7 +137,7 @@ int get_the_block(int startIndex){
   int i = startIndex;
   int max = startIndex + 253;
 
-  while( i <= max && defined[i]){
+  while( defined[i] && i <= max){
     i++;
   }
 
@@ -159,7 +159,7 @@ void write_the_block(int startIndex, int endIndex){
 
     //Write the address
     if(i == startIndex){
-      addr_1 = startIndex >> 6 & 0x3F;
+      addr_1 = (startIndex >> 6) & 0x3F;
       addr_2 = startIndex & 0x3F;
       fprintf(pFile, "%02x", addr_1);
       howManyBytes+=2;
@@ -173,18 +173,18 @@ void write_the_block(int startIndex, int endIndex){
     }
    
 
-      val_1 = (memory[i] >> 6) & 0x3F;
-      val_2 = memory[i] & 0x3F;
+    val_1 = (memory[i] >> 6) & 0x3F;
+    val_2 = memory[i] & 0x3F;
       
-      fprintf(pFile, "%02x", val_1);
-      howManyBytes+=2;
-      need_space_or_not();
-      need_newline_or_not();
+    fprintf(pFile, "%02x", val_1);
+    howManyBytes+=2;
+    need_space_or_not();
+    need_newline_or_not();
 
-      fprintf(pFile, "%02x", val_2);
-      howManyBytes+=2;
-      need_space_or_not();
-      need_newline_or_not();
+    fprintf(pFile, "%02x", val_2);
+    howManyBytes+=2;
+    need_space_or_not();
+    need_newline_or_not();
     
 
     i++;
