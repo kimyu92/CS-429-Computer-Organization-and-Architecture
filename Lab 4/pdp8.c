@@ -336,10 +336,10 @@ void process(){
 		}
 
 		//Debug
-		if(debug == 100)
-			break;
-		else
-			debug++;
+		// if(debug == 10)
+		// 	break;
+		// else
+		// 	debug++;
 
 		skipFlag = FALSE;
 	}
@@ -426,6 +426,8 @@ void first_fetch_sets(){
 			signBit = registerA;
 			signBit >>= 12;
 			signBit &= 0x1;
+
+			registerA %= 4096;
 
 			if ( signBit == 1){
 				linkBit = ~linkBit;
@@ -610,6 +612,8 @@ void second_fetch_sets(){
 			signBit >>= 12;
 			signBit &= 0x1;
 
+			registerA %= 4096;
+
 			if ( signBit == 1){
 				linkBit = ~linkBit;
 				linkBit &= 0x1;
@@ -624,7 +628,9 @@ void second_fetch_sets(){
 			//Rotate the A register right
 
 			//1bit
-			
+			if(rotate == 0)
+				strcat(instructions, "RAR ");
+
 			swap = registerA;
 			registerA >>= 1;
 			registerA |= (linkBit << 11);
@@ -639,14 +645,17 @@ void second_fetch_sets(){
 				registerA &= 0xFFF;
 				linkBit = swap  & 0x1;
 
+				strcat(instructions, "RTR ");
 			}
 
-			strcat(instructions, "RTR ");
+			
 		}
 		
 		if (RTL == 1){
 			//Rotate the A register left.
 			//1bit or 2 bit(first rotate)
+			if(rotate == 0)
+				strcat(instructions, "RAL ");
 			
 			swap = registerA;
 			registerA <<= 1;
@@ -661,8 +670,10 @@ void second_fetch_sets(){
 				registerA |= linkBit;
 				registerA &= 0xFFF;
 				linkBit = (swap >> 11)  & 0x1;
+
+				strcat(instructions, "RTL ");
 			}
-			strcat(instructions, "RTL ");
+			
 		}
 		
 	}
@@ -719,7 +730,7 @@ void second_fetch_sets(){
 
 
 		//If none are selected, the Skip flag is cleared
-		if ( (SMA | SZA | SNL) == 0 )
+		if ( !(SMA + SZA + SNL) )
 			skipFlag = FALSE;
 
 		//Reverse Skip Sense
@@ -741,6 +752,7 @@ void second_fetch_sets(){
 		//Treat it as NOP
 		//But how?
 		if(OSR == 1){
+			strcat(instructions, "NOP ");
 		}
 
 		if(HLT == 1){
@@ -773,11 +785,12 @@ void third_fetch_sets(){
 
 	if(device == 3){
 		registerA = getchar();
+		registerA &= 0xFFF;
 
 		strcat(instructions, "IOT 3 ");
 	}
 	else if (device == 4){
-		putchar(registerA & 0xFF);
+		putchar(registerA & 0x0FF);
 		strcat(instructions, "IOT 4 ");
 		//fprintf(stderr, "Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", ...);
 	}
@@ -792,7 +805,7 @@ void third_fetch_sets(){
 void printTheResult(){
 	remove_trailer_space();
 
-	printf("Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", 
+	fprintf(stderr,"Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", 
 			cycle_count, program_counter, _instruct, instructions, registerA, linkBit);
 }
 
