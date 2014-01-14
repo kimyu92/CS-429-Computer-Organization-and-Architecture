@@ -64,6 +64,30 @@ struct cache_line
 typedef struct cache_line cache_line;
 
 
+struct cache
+{
+    String      name;
+
+    int         cache_line_size;
+    int         number_of_ways;
+    Boolean     write_back;
+    enum CRP    replacement_policy;
+
+    /* how often to decrease the counts for LFU */
+    int         LFU_Decay_Interval;   
+
+    /* array of cache lines */
+    cache_line *c_line;
+
+    int         number_of_cache_entries;
+
+    counter_t number_total_cache_access;
+    counter_t number_cache_hits;
+    counter_t number_cache_misses;
+
+    counter_t number_miss_reads;
+    counter_t number_miss_writes;
+};
 
 
 /* ***************************************************************** */
@@ -77,32 +101,13 @@ struct CDS
     struct CDS *next;  /* linked list of all the CDS */
 
     String      name;
-    int         cache_line_size;
-    int         number_of_cache_entries;
-    int         number_of_ways;
-    int         number_victim_lines;      //number of lines in victim cache           
-    int         number_victim_cache_hits; //victim cache
-    Boolean     write_back;
-    enum CRP    replacement_policy;
 
-    /* how often to decrease the counts for LFU */
-    int         LFU_Decay_Interval;   
-
-    /* array of cache lines */
-    cache_line *c;
-
-    /* array of cache lines */
-    cache_line *victim_c;
+    struct cache *c;
+    struct cache *v;
 
     /* statistics for each cache policy */
     counter_t number_of_memory_reference;
     counter_t number_of_type[NUMBER_OF_MEMORY_ACCESS_TYPE];
-
-    counter_t number_total_cache_access;
-    counter_t number_cache_hits;
-    counter_t number_cache_misses;
-    counter_t number_memory_reads;
-    counter_t number_memory_writes;
 };
 typedef struct CDS CDS;
 

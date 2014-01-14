@@ -7,6 +7,7 @@
 #include "global.h"
 
 String remember_string(const String name);
+String augment_name(const String name, const String plus);
 
 /* ***************************************************************** */
 /*                                                                   */

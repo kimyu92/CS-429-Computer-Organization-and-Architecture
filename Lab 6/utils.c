@@ -91,6 +91,15 @@ String remember_string(const String name)
     return(p);
 }
 
+String augment_name(const String name, const String plus)
+{
+    int n = strlen(name) + 1 + strlen(plus) + 1;
+    String p = CAST(String, malloc(n));
+    sprintf(p, "%s %s", name, plus);
+    return(p);
+}
+
+
 /* ***************************************************************** */
 /*                                                                   */
 /*                                                                   */

@@ -46,7 +46,7 @@ void put_char_in_token_at(Token *t, char c, int i)
         {
             /* need more space */
             t->length = 2 * t->length;
-            t->string = realloc(t->string, t->length);
+            t->string = CAST(char *,realloc(t->string, t->length));
             if (t->string == NULL)
                 {
                     fprintf(stderr, "Hell has frozen over!!!\n");
@@ -156,7 +156,8 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
     if ((strcasestr(key->string, "line") != NULL) && (strcasestr(key->string, "size") != NULL))
         {
             int n = atoi(value->string);
-            cds->cache_line_size = n;
+            cds->c->cache_line_size = n;
+            cds->v->cache_line_size = n;    //grab number of bytes per victim cache line
             return;
         }
 
@@ -164,7 +165,7 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
     if (strcasestr(key->string, "entries") != NULL)
         {
             int n = atoi(value->string);
-            cds->number_of_cache_entries = n;
+            cds->c->number_of_cache_entries = n;
             return;
         }
 
@@ -172,7 +173,7 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
     if (strcasestr(key->string, "ways") != NULL)
         {
             int n = atoi(value->string);
-            cds->number_of_ways = n;
+            cds->c->number_of_ways = n;
             return;
         }
 
@@ -181,12 +182,12 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
         {
             if (strcasestr(value->string, "true") != NULL)
                 {
-                    cds->write_back = TRUE;
+                    cds->c->write_back = TRUE;
                     return;
                 }
             if (strcasestr(value->string, "false") != NULL)
                 {
-                    cds->write_back = FALSE;
+                    cds->c->write_back = FALSE;
                     return;
                 }
         }
@@ -196,12 +197,12 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
         {
             if (strcasestr(value->string, "true") != NULL)
                 {
-                    cds->write_back = FALSE;
+                    cds->c->write_back = FALSE;
                     return;
                 }
             if (strcasestr(value->string, "false") != NULL)
                 {
-                    cds->write_back = TRUE;
+                    cds->c->write_back = TRUE;
                     return;
                 }
         }
@@ -211,38 +212,38 @@ void define_key_value_pair(CDS *cds, Token *key, Token *value)
         {
             if (strcasestr(value->string, "LRU") != NULL)
                 {
-                    cds->replacement_policy = CRP_LRU;
+                    cds->c->replacement_policy = CRP_LRU;
                     return;
                 }
             if (strcasestr(value->string, "LFU") != NULL)
                 {
-                    cds->replacement_policy = CRP_LFU;
+                    cds->c->replacement_policy = CRP_LFU;
                     return;
                 }
             if (strcasestr(value->string, "random") != NULL)
                 {
-                    cds->replacement_policy = CRP_RANDOM;
+                    cds->c->replacement_policy = CRP_RANDOM;
                     return;
                 }
             if (strcasestr(value->string, "FIFO") != NULL)
                 {
-                    cds->replacement_policy = CRP_FIFO;
+                    cds->c->replacement_policy = CRP_FIFO;
                     return;
                 }
         }
 
     //Look for victim cache
-     if (strcasestr(key->string, "victim") != NULL){
-        cds->number_victim_lines = atoi(value->string);       
+    if (strcasestr(key->string, "victim") != NULL){
+        cds->v->number_of_cache_entries = atoi(value->string);  //grab the number of entries    
+        cds->v->replacement_policy = CRP_FIFO;                  //set it to FIFO
         return;
     }
-
 
     /* look for line size */
     if ((strcasestr(key->string, "decay") != NULL) && (strcasestr(key->string, "interval") != NULL))
         {
             int n = atoi(value->string);
-            cds->LFU_Decay_Interval = n;
+            cds->c->LFU_Decay_Interval = n;
             return;
         }
 
@@ -278,15 +279,18 @@ CDS *Read_CDS_file_entry(FILE *CDS_file)
 
     /* starting a new cache description.  Get a structure,
        and fill in default values. */
-    CDS *cds = (CDS *)calloc(1,sizeof(CDS));
+    CDS *cds = CAST(CDS *,calloc(1,sizeof(CDS)));
     cds->name = remember_string("dummy");
-    cds->cache_line_size = 64;
-    cds->number_of_cache_entries = 1024;
-    cds->number_of_ways = 2;
-    cds->write_back = TRUE;
-    cds->replacement_policy = CRP_FIFO;
-    cds->LFU_Decay_Interval = 200000;
-    cds->c = NULL;
+    cds->c = CAST(struct cache *,calloc(1,sizeof(struct cache)));
+
+    /* default values */
+    cds->c->cache_line_size = 64;
+    cds->c->number_of_cache_entries = 1024;
+    cds->c->number_of_ways = 2;
+    cds->c->write_back = TRUE;
+    cds->c->replacement_policy = CRP_FIFO;
+    cds->c->LFU_Decay_Interval = 200000;
+    cds->c->c_line = NULL;
 
     Token *key = new_token();
     Token *value = new_token();
@@ -296,6 +300,8 @@ CDS *Read_CDS_file_entry(FILE *CDS_file)
         }
     delete_token(key);
     delete_token(value);
+
+    cds->c->name = remember_string(cds->name);
 
     if (debug) debug_print_cds(cds);
     
