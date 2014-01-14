@@ -373,11 +373,7 @@ Boolean evict_from_victim_cache(CDS *cds, cache_line *victim_line, memory_addres
     //Find it in victim cache
     if (victim_cache_entry_index >= 0){
         Found = TRUE;
-
-        // if (cds->v->c_line[victim_cache_entry_index].valid && (cache_address == cds->v->c_line[victim_cache_entry_index].tag)){
-            //Swapping
-            swap_cache_lines(victim_cache_entry, cache_entry);
-        // }
+        swap_cache_lines(victim_cache_entry, cache_entry);
     }
     else{
 
@@ -386,14 +382,17 @@ Boolean evict_from_victim_cache(CDS *cds, cache_line *victim_line, memory_addres
 
         //Before writing inside into victim line
         //If it is dirty, write it down
-        if(victim_cache_entry->dirty)
+        if(victim_cache_entry->dirty){
             evict_dirty_line_from_cache(cds->v, victim_cache_entry);
+        }
+        
+
 
         //So, we can safely write the victim (base cache) into the victim cache
         if(!Found){
             victim_cache_entry->tag = cache_address;
             victim_cache_entry->valid = TRUE;
-            victim_cache_entry->dirty = FALSE;
+            victim_cache_entry->dirty = cache_entry->dirty;
 
             cds->v->c_line[victim_cache_entry_index] = cds->c->c_line[cache_entry_index];
 
@@ -404,11 +403,7 @@ Boolean evict_from_victim_cache(CDS *cds, cache_line *victim_line, memory_addres
 
     }
 
-
-    if (!Found)
-        Set_Replacement_Policy_Data(cds->number_of_memory_reference, cds->v, victim_cache_entry);
-    else
-        Update_Replacement_Policy_Data(cds->number_of_memory_reference, cds->v, victim_cache_entry);
+    Set_Replacement_Policy_Data(cds->number_of_memory_reference, cds->v, victim_cache_entry);
 
 
     return Found;
@@ -460,9 +455,9 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
     	if (cache_entry->valid){
             if(cds->victim_cache_is_created == TRUE){
                 //Access victim cache
+                evict_from_cache(cds, cache_entry, cache_address);
                 cds->v->number_total_cache_access += 1;
                 Found = evict_from_victim_cache(cds, cache_entry, cache_address, cache_entry_index, reference);
-                evict_from_cache(cds, cache_entry, cache_address);
             }
             else{
                 Found = evict_from_cache(cds, cache_entry, cache_address);
