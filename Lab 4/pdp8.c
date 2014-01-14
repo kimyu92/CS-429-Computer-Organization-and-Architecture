@@ -27,12 +27,17 @@ STRING instructions;
 
 int registerA = 0;
 int linkBit = 0;
+Boolean _non_verbose = FALSE;
+
+//Flag
 Boolean skipFlag = FALSE;
 Boolean IOTFlag = FALSE;
 Boolean HALT = FALSE;
 
-Boolean nextPCUpdate;
-Boolean JMSUpdate;
+Boolean nextPCUpdate = FALSE;
+Boolean JMSUpdate = FALSE;
+
+Boolean _cat_I_bool = FALSE;
 
 
 //Functions Prototype
@@ -79,6 +84,9 @@ int main(int argc, char **argv){
 		}
 		printf("Correct format\n");
 		rewind(input1);
+
+		_non_verbose = TRUE;
+		
 		process();
 		fclose(input1);
 	}
@@ -116,7 +124,6 @@ int main(int argc, char **argv){
 
 Boolean checkFile(){
 	Boolean EP_exists = FALSE;
-	int i = 0;
 
 	STRING bufferString = (STRING) malloc( (sizeof(char)) * 10 );
 
@@ -336,7 +343,8 @@ void process(){
 		}
 
 		//Debug
-		// if(debug == 10)
+		
+		// if(debug == 500)
 		// 	break;
 		// else
 		// 	debug++;
@@ -396,6 +404,14 @@ void decide_instruction_sets(){
 			//printTheResult();
 			break;
 	}
+
+	if(_cat_I_bool == TRUE){
+		strcat(instructions, "I ");
+
+		cycle_count++;
+
+		_cat_I_bool = FALSE;
+	}
 }
 
 
@@ -454,7 +470,7 @@ void first_fetch_sets(){
 			my_memory[effectiveAddress] = registerA;
 			registerA = 0;
 			registerA &= 0xFFF;
-			my_memory[program_counter] = 0;
+			
 			cycle_count+=2;
 			break;
 		case 4:
@@ -509,8 +525,11 @@ int compute_effectiveAddr(){
 	checkingDI &= 0x1;
 
 
-	if(checkingDI == 1)
+	if(checkingDI == 1){
 		effectiveAddress = my_memory[effectiveAddress];
+
+		_cat_I_bool = TRUE;
+	}
 
 	//if(effectiveAddress != 0)	
 	return effectiveAddress;
@@ -771,7 +790,6 @@ void third_fetch_sets(){
 	//If the device is 3, do a getchar() to read a character from standard input and put that character in the A register. 
 	//If the device is 4, take the low-order 8 bits from the A register and output it as an ASCII character to standard output (putchar()). 
 	//Assume these IOT instructions take 1 cycle.
-	int instruction = my_memory[program_counter];
 	int device = my_memory[program_counter];
 	int function3bits = my_memory[program_counter];
 
@@ -798,6 +816,8 @@ void third_fetch_sets(){
 		HALT = TRUE;
 	}
 
+	cycle_count++;
+
 }
 
 
@@ -805,8 +825,13 @@ void third_fetch_sets(){
 void printTheResult(){
 	remove_trailer_space();
 
-	fprintf(stderr,"Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", 
-			cycle_count, program_counter, _instruct, instructions, registerA, linkBit);
+	if(_non_verbose == FALSE){
+		fprintf(stderr,"Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", 
+				cycle_count, program_counter, _instruct, instructions, registerA, linkBit);
+	}
+	else{
+		fprintf(stderr,"%lld\n",cycle_count);
+	}
 }
 
 
