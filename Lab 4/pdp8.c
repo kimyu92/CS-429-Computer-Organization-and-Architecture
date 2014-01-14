@@ -251,7 +251,7 @@ Boolean check_char_within_range(char receivedChar){
 }
 
 
-
+//Screwed up
 void load_into_memory(){
 	int temp;
 	short index_hex2dec = 0;
@@ -261,7 +261,6 @@ void load_into_memory(){
 	int k;
 
 	int count = 1;
-
 	int countTemp = 1;
 	int countInstruction = 1;
 
@@ -338,7 +337,7 @@ void load_into_memory(){
 
 	for(k = 0; k < 4096; k++){
 		if (my_memory[k] != 0){
-			printf("index: %d  %d\n", k, my_memory[k]);
+			printf("index: %x  %x\n", k, my_memory[k]);
 		}
 	}
 
@@ -430,13 +429,14 @@ void first_fetch_sets(){
 
 	opcode >>= 9;
 
+	printf("%d\n", my_memory[10]);
 	switch(opcode){
-		case 0:
+		case 0: //AND
 			registerA &= my_memory[effectiveAddress];
 			registerA &= 0xFFF;
 			cycle_count+=2;
 			break;
-		case 1:
+		case 1: //TAD
 			registerA += my_memory[effectiveAddress];
 
 			//A carry out of the high-order bit (sign bit) 
@@ -456,7 +456,7 @@ void first_fetch_sets(){
 		case 2:
 			effectiveAddress++;
 			my_memory[effectiveAddress] = effectiveAddress;
-			
+
 			//Result zero
 			if(my_memory[effectiveAddress] == 0)
 				program_counter++;
@@ -464,7 +464,7 @@ void first_fetch_sets(){
 			cycle_count+=2;
 			break;
 		case 3:
-			registerA = effectiveAddress;
+			effectiveAddress = registerA;
 			registerA = 0;
 			registerA &= 0xFFF;
 			my_memory[program_counter] = 0;
@@ -544,8 +544,8 @@ void second_fetch_sets(){
 	int CLL = 	my_memory[program_counter];
 	int CMA = 	my_memory[program_counter];
 	int CML = 	my_memory[program_counter];
-	int RAR = 	my_memory[program_counter];
-	int RAL = 	my_memory[program_counter];
+	int RTR = 	my_memory[program_counter];
+	int RTL = 	my_memory[program_counter];
 	int rotate = my_memory[program_counter];
 	int IAC = 	my_memory[program_counter];
 
@@ -583,11 +583,11 @@ void second_fetch_sets(){
 		CML >>=4;
 		CML &= 0x1;
 
-		RAR >>=3;
-		RAR &= 0x1;
+		RTR >>=3;
+		RTR &= 0x1;
 
-		RAL >>=2;
-		RAL &= 0x1;
+		RTL >>=2;
+		RTL &= 0x1;
 
 		rotate >>=1;
 		rotate &= 0x1;
@@ -641,7 +641,7 @@ void second_fetch_sets(){
 			//cycle_count++;
 		}
 		
-		if (RAR == 1){
+		if (RTR == 1){
 			//Rotate the A register right
 
 			//1bit
@@ -667,34 +667,28 @@ void second_fetch_sets(){
 				linkBit = swap  & 0x1;
 			}
 
-			strcat(instructions, "RAR ");
+			strcat(instructions, "RTR ");
 		}
 		
-		if (RAL == 1){
+		if (RTL == 1){
 			//Rotate the A register left.
-			//1bit
-			if(rotate == 0){
+			//1bit or 2 bit(first rotate)
+			
+			swap = registerA;
+			registerA <<= 1;
+			registerA |= linkBit;
+			registerA &= 0xFFF;
+			linkBit = (swap >> 11)  & 0x1;
+			
+			//2bit (second rotate)
+			if (rotate == 1){
 				swap = registerA;
-				registerA <<= 11;
+				registerA <<= 1;
 				registerA |= linkBit;
 				registerA &= 0xFFF;
 				linkBit = (swap >> 11)  & 0x1;
 			}
-			//2bit
-			else{
-				swap = registerA;
-				registerA <<= 11;
-				registerA |= linkBit;
-				registerA &= 0xFFF;
-				linkBit = (swap >> 11)  & 0x1;
-
-				swap = registerA;
-				registerA <<= 11;
-				registerA |= linkBit;
-				registerA &= 0xFFF;
-				linkBit = (swap >> 11)  & 0x1;
-			}
-			strcat(instructions, "RAL ");
+			strcat(instructions, "RTL ");
 		}
 		
 	}
