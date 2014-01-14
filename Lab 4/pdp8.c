@@ -19,9 +19,12 @@ typedef char *STRING;
 
 static short my_memory[4096];
 int program_counter = 0;
+int cycle_count = 0;
+
+
 int registerA = 0;
 int linkBit = 0;
-int cycle_count = 0;
+Boolean skipFlag = FALSE;
 
 Boolean checkFile();
 Boolean check_char_within_range(char receivedChar);
@@ -454,16 +457,29 @@ Boolean second_fetch_sets(){
 	int CML = 	my_memory[program_counter];
 	int RAR = 	my_memory[program_counter];
 	int RAL = 	my_memory[program_counter];
-	int rotate =my_memory[program_counter];
+	int rotate = my_memory[program_counter];
 	int IAC = 	my_memory[program_counter];
 
+	int SMA = my_memory[program_counter];
+	int SZA = my_memory[program_counter];
+	int SNL = my_memory[program_counter];
+	int RSS = my_memory[program_counter];
+	int OSR = my_memory[program_counter];
+	int HLT = my_memory[program_counter];
+
+	//Swap for Rotation
+	int swap;
+
+	//Get the Group No.
 	checkGroup >>=8;
 	checkGroup &= 0x1;
 
+	CLA >>= 7;
+	CLA &= 0x1;
+	
 	//Group 1
 	if(checkGroup == 0){
-		CLA >>= 7;
-		CLA &= 0x1;
+
 
 		CLL >>=6;
 		CLL &= 0x1;
@@ -485,58 +501,148 @@ Boolean second_fetch_sets(){
 
 		IAC &= 0x1;
 
-		if (CLA & CLL == 1){
-			//Clear both the A register and the Link
+		if (CLA == 1){
+			//Clear both the A register
 			registerA = 0;
+		}
+
+		if (CLL == 1){
+			//Clear the Link bit
 			linkBit = 0;
 		}
 		
-		if (CLA & CMA == 1){
-			//set the A register to all ones
-			registerA = 0;
+		if(CMA == 1){
+			//Complement the A register (bit by bit, change 1 to 0 and 0 to 1).
 			registerA = ~registerA;
 		}
 		
-		if (CMA & IAC == 1){
+		if (CML == 1){
+			//Complement the Link bit. 
+			linkBit = ~linkBit;
+		}
+		
+		if (IAC == 1){
 			//two's complement
-			registerA = ~registerA + 1;
+			registerA++;
 		}
 		
-		if (CLL & RAL == 1){
-			//multiply the A register by two
-			//put sign bit in Link
-			registerA *= 2;
-			registerA >> 11;
-			registerA &= 1;
+		if (RAR == 1){
+			//Rotate the A register right
 
-			linkBit = registerA;
+			//1bit
+			if(rotate == 0){
+				swap = registerA;
+				registerA >>= 1;
+				registerA |= (linkBit << 11);
+				linkBit = swap  & 0x1;
+			}
+			//2bit
+			else{
+				swap = registerA;
+				registerA >>= 1;
+				registerA |= (linkBit << 11);
+				linkBit = swap  & 0x1;
+
+				swap = registerA;
+				registerA >>= 1;
+				registerA |= (linkBit << 11);
+				linkBit = swap  & 0x1;
+			}
 		}
 		
-		if (SMA & SZA == 1){
-			//Skip if the A register is less than or equal to zero. 
-			if (registerA <= 0)
-				program_counter++;
+		if (RAL == 1){
+			//Rotate the A register left.
+			//1bit
+			if(rotate == 0){
+				swap = registerA;
+				registerA <= 11;
+				registerA |= linkBit;
+				linkBit = (swap >> 11)  & 0x1;
+			}
+			//2bit
+			else{
+				swap = registerA;
+				registerA <= 11;
+				registerA |= linkBit;
+				linkBit = (swap >> 11)  & 0x1;
+
+				swap = registerA;
+				registerA <= 11;
+				registerA |= linkBit;
+				linkBit = (swap >> 11)  & 0x1;
+			}
 		}
-		
-		if (CLA & SZA == 1){
-			//First, test if A is zero or not.
-			//If A was zero, skip next instruction.
-			if(registerA == 0)
-				program_counter++;
-
-			//Then clear A. 
-			registerA = 0;
-		}
-
-
-
 
 	}
 
 
 	//Group 2
-	if (checkGroup == 1 )
-		HALT = TRUE;
+	if (checkGroup == 1 ){
+		SMA >>=6;
+		SMA &= 0x1;
+
+		SZA >>=5;
+		SZA &= 0x1;
+
+		SNL >>=4;
+		SNL &= 0x1;
+
+		RSS >>=3;
+		RSS &= 0x1;
+
+		OSR >>=2;
+		OSR &= 0x1;
+
+		HLT >>=1;
+		HLT &= 0x1;
+
+		//How about the last bit
+		//Always 0?
+		
+		//Skip on Minus
+		if (SMA == 1){
+			if (  ((registerA >> 11) & 0x1) == 1 )
+				skipFlag = TRUE;
+		}
+
+		//Skip on Zero
+		if(SZA == 1){
+			if (registerA == 0){
+				skipFlag = TRUE;
+			}
+		}
+
+		//Skip on Nonzero Link.
+		if(SNL == 1){
+			if (linkBit == 1){
+				skipFlag = TRUE;
+			}
+		}
+
+
+		//If none are selected, the Skip flag is cleared
+		if ( (SMA | SZA | SNL) == 0 )
+			skipFlag = FALSE;
+
+
+		//Reverse Skip Sense
+		if(RSS == 1){
+			skipFlag = !skipFlag;
+		}
+
+		//Clear both the A register
+		if (CLA == 1){
+			registerA = 0;
+		}
+
+		//Treat it as NOP
+		//But how?
+		if(OSR == 1){
+		}
+
+		if(HLT == 1)
+			HALT = TRUE;
+	}
 
 
 	return HALT;
