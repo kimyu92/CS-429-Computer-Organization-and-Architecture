@@ -76,7 +76,7 @@ int howManyBytes = 0;
 void Output_Object_Code(void)
 {
   
-  pFile = fopen("abc.obj", "w");
+  pFile = fopen("abc.obj", "w+");
 
   int byte_5;
   int byte_6;
@@ -137,7 +137,7 @@ int get_the_block(int startIndex){
   int i = startIndex;
   int max = startIndex + 253;
 
-  while( defined[i] && i <= max){
+  while( defined[i] && i <= 4095){
     i++;
   }
 
