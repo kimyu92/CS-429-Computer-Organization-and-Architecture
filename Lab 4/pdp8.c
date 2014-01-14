@@ -32,10 +32,13 @@ Boolean IOTFlag = FALSE;
 Boolean HALT = FALSE;
 
 Boolean nextPCUpdate;
+Boolean JMSUpdate;
 
 
 //Functions Prototype
 Boolean checkFile();
+Boolean checkEP(STRING bufferString);
+Boolean checkNonEP(STRING bufferString);
 Boolean check_char_within_range(char receivedChar);
 
 //Controller
@@ -43,7 +46,7 @@ void process();
 
 //Load Memory
 void load_into_memory();
-char convert_A_to_F_num(char temp);
+int char_to_hex(STRING temp);
 
 //Fetching
 void decide_instruction_sets();
@@ -112,93 +115,188 @@ int main(int argc, char **argv){
 
 
 Boolean checkFile(){
-	char temp;
-	Boolean EPcount = FALSE;
-	int count = 1;
+	Boolean EP_exists = FALSE;
+	int i = 0;
 
-	while( (temp = getc(input1)) != EOF ){
-		
-		//Check the first line
-		if(EPcount == FALSE){
+	STRING bufferString = (STRING) malloc( (sizeof(char)) * 10 );
 
-			// printf("%c\n", temp);
+	//Multiple EP case
+	while( fgets(bufferString, 10, input1) != NULL ){
 
-			if( temp != 'E')
-				return FALSE;
-
-			if ((temp = getc(input1)) != 'P')
-				return FALSE;
-
-			// printf("%c\n", temp);
-
-			if ( (temp = getc(input1)) != ':')
-				return FALSE;
-
-			// printf("%c\n", temp);
-
-			if ( (temp = getc(input1)) != ' ')
-				return FALSE;
+		if (checkNonEP(bufferString) == FALSE){
 			
-			// printf("%c\n", temp);
-
-			//Next 3instructions code
-			temp = getc(input1);
-			// printf("%c\n", temp);
-			if( check_char_within_range(temp) == FALSE )
-				return FALSE;
-
-			temp = getc(input1);
-			// printf("%c\n", temp);
-			if(check_char_within_range(temp) == FALSE )
-				return FALSE;
-
-			temp = getc(input1);
-			// printf("%c\n", temp);
-			if( check_char_within_range(temp) == FALSE )
-				return FALSE;
-
-			temp = getc(input1);
-			if( (temp == '\n') || (temp == EOF) )
-				;
+			if( checkEP(bufferString) == TRUE ){
+				EP_exists = TRUE;
+			}
 			else
-				return FALSE;
-			// printf("%c lol\n", temp);
-
-			EPcount = TRUE;
-		}
-		else{
-
-			// printf("%c\n", temp);
-
-			if( (count % 10) == 4){
-				if (temp != ':')
-					return FALSE;
-			}
-			else if ((count % 10) == 5){
-				if(temp != ' ')
-					return FALSE;
-			}
-			else if((count % 10) == 9){
-				if( (temp == '\n') || (temp== EOF) )
-					;
-				else
-					return FALSE;
-			}
-			else{
-				//printf("enter \n");
-				if ( check_char_within_range(temp) == 0 )
-					return FALSE;
-			}
-
-
-			if(count == 9)
-				count = 1;
-			else
-				count++;
+				break;
 		}
 	}
 
+	bufferString[0] = '\0';
+	free(bufferString);
+
+	return EP_exists;
+}
+
+
+
+Boolean checkEP(STRING bufferString){
+	char temp[3];
+	int i;
+
+	if( (bufferString[0] == 'E') && 
+		(bufferString[1] == 'P') &&
+		(bufferString[2] == ':') &&
+		(bufferString[3] == ' ') &&
+		( check_char_within_range(bufferString[4]) ) &&
+		( check_char_within_range(bufferString[5]) ) &&
+		( check_char_within_range(bufferString[6]) )    ){
+
+		for(i = 4; i < 7 ; i++){
+			temp[i-4] = bufferString[i];
+		}
+
+		//printf("SSS  %s\n", temp);
+		program_counter = char_to_hex(temp);
+
+		//printf("LAlll %lx\n",x );
+		//printf("LAlll %ld\n",x );
+
+		return TRUE;
+	}
+
+
+	return FALSE;
+}
+
+
+
+Boolean checkNonEP(STRING bufferString){
+	int i = 1;
+
+	while(i < 10){
+
+		if( ((i >= 1) && (i <= 3)) || 
+			((i >= 6) && (i <= 8))  ){
+			if( check_char_within_range(bufferString[ i - 1]) == FALSE ){
+				return FALSE;
+			}
+		}
+		else if (i == 4){
+			if( bufferString[ i - 1 ] != ':' ){
+				return FALSE;
+			}
+		}
+		else if (i == 5){
+			if (bufferString[ i - 1 ] != ' '){
+				return FALSE;
+			}
+		}
+		else if (i == 9){
+
+			if(bufferString [ i - 1] == EOF){
+				return TRUE;
+			}
+
+			if(bufferString [ i - 1 ] != '\n'){
+				return FALSE;
+			}
+		}
+
+		i++;
+	}
+
 	return TRUE;
+}
+
+
+
+Boolean check_char_within_range(char receivedChar){
+	if( (receivedChar >= 48 && receivedChar <= 57 )
+		|| (receivedChar >= 65 && receivedChar <= 70 ) ){
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
+
+
+void load_into_memory(){
+	int printIndex;
+	int real_address;
+	int real_instruct_mem;
+
+	STRING bufferString = (STRING) malloc( (sizeof(char)) * 10 );
+	char memAddress[3];
+	char instructMem[3];
+
+	int i;
+
+	//load into memory
+	while( fgets(bufferString, 10, input1) != NULL ){
+
+		if(checkEP(bufferString) == FALSE){
+			
+			for(i = 0; i < 3 ; i++){
+				memAddress[i] = bufferString[i];
+			}
+
+			real_address = char_to_hex(memAddress);
+
+			
+			for(i = 5; i < 8 ; i++){
+				instructMem[i-5] = bufferString[i];
+			}
+
+			printf("AAA%sAAA\n", instructMem);
+			real_instruct_mem= char_to_hex(instructMem);
+
+			my_memory[real_address] = real_instruct_mem & 0xFFF;
+		}
+
+	}
+
+
+	bufferString[0] = '\0';
+	free(bufferString);
+
+
+
+	//Print to check stuff inside memory -debugmem
+	for(printIndex = 0; printIndex < 4096; printIndex++){
+		if (my_memory[printIndex] != 0){
+			printf("index: %x  %x\n", printIndex, my_memory[printIndex]);
+		}
+	}
+
+}
+
+
+
+int char_to_hex(STRING temp){
+	int hex_now = 0;
+	int i;
+
+	for(i = 0; i < 3; i++){
+
+		if( (temp[i] >= '0') && (temp[i] <= '9') )
+			temp[i] -= '0';
+		else
+			temp[i] -= 55;
+
+		if(i == 0){
+			hex_now |= (temp[i] << 8);
+		}
+
+		if(i == 1){
+			hex_now |= (temp[i] << 4);
+		}
+	}
+
+	hex_now |= temp[2];
+	return hex_now;
 }
 
 
@@ -232,135 +330,18 @@ void process(){
 			nextPCUpdate = FALSE;
 		}
 
+		if(JMSUpdate == TRUE){
+			program_counter = updatePC;
+			JMSUpdate = FALSE;
+		}
+
 		//Debug
-		if(debug == 9)
+		if(debug == 100)
 			break;
 		else
 			debug++;
-	}
-}
 
-
-
-Boolean check_char_within_range(char receivedChar){
-	if( (receivedChar >= 48 && receivedChar <= 57 )
-		|| (receivedChar >= 65 && receivedChar <= 70 ) )
-		return TRUE;
-
-	return FALSE;
-}
-
-
-//Screwed up
-void load_into_memory(){
-	int temp;
-	short index_hex2dec = 0;
-	short instruct_hex2dec = 0;
-
-	int i;
-	int k;
-
-	int count = 1;
-	int countTemp = 1;
-	int countInstruction = 1;
-
-	for(i = 0; i < 8; i++){
-		temp = getc(input1);
-
-		if( i >= 4 && i <= 6){
-			printf("%c\n", temp);
-			temp = convert_A_to_F_num(temp);
-			temp -= 48;
-
-			printf("cool\n");
-
-			if(count == 1)
-				temp <<= 8;
-			else if (count == 2)
-				temp <<= 4;
-
-			//Get Program counter
-			program_counter += temp;
-			count++;
-		}
-	}
-
-	//Reserve for future use
-	count = 0;
-
-	printf("program counter %d\n", program_counter);
-	printf("%c This space\n", temp);
-	printf("ccoool stuff starts here\n");
-	while( (temp = getc(input1)) != EOF){
-		if (count <= 3){
-			temp = convert_A_to_F_num(temp);
-			temp -= 48;
-
-			if(count == 1)
-				temp <<= 8;
-			else if (count == 2)
-				temp <<= 4;
-
-			index_hex2dec += temp;
-		}
-
-		if( (countInstruction % 10) >= 6 && (countInstruction % 10) <= 8 ){
-			temp = convert_A_to_F_num(temp);
-			temp -= 48;
-			temp &= 0xF;
-			temp <<= ( (3-countTemp) * 4 );
-			instruct_hex2dec |= temp;
-
-			instruct_hex2dec &= 0xFFF;
-			countTemp++;
-		}
-
-		//increment
-		count++;
-
-		//Reset or increment
-		if(countInstruction == 9){
-			my_memory[index_hex2dec] = instruct_hex2dec;
-
-			index_hex2dec = 0;
-			instruct_hex2dec = 0;
-
-			countInstruction = 1;
-			countTemp = 1;
-
-			count = 1;
-		}
-		else
-			countInstruction++;
-
-	}
-
-	for(k = 0; k < 4096; k++){
-		if (my_memory[k] != 0){
-			printf("index: %x  %x\n", k, my_memory[k]);
-		}
-	}
-
-}
-
-
-
-char convert_A_to_F_num(char temp){
-	switch(temp){
-		case 'A':
-			return 58;
-		case 'B':
-			return 59;
-		case 'C':
-			return 60;
-		case 'D':
-			return 61;
-		case 'E':
-			return 62;
-		case 'F':
-			return 63;
-		default:
-			return temp;
+		skipFlag = FALSE;
 	}
 }
 
@@ -381,6 +362,7 @@ void decide_instruction_sets(){
 			//printTheResult();	
 			break;
 		case 1:
+			//printf("Effective %x\n", compute_effectiveAddr());
 			strcat(instructions, "TAD ");
 			first_fetch_sets();
 			//printTheResult();
@@ -429,7 +411,7 @@ void first_fetch_sets(){
 
 	opcode >>= 9;
 
-	printf("%d\n", my_memory[10]);
+	//printf("%d\n", my_memory[10]);
 	switch(opcode){
 		case 0: //AND
 			registerA &= my_memory[effectiveAddress];
@@ -449,30 +431,34 @@ void first_fetch_sets(){
 				linkBit = ~linkBit;
 				linkBit &= 0x1;
 			}
-
 			registerA &= 0xFFF;
 			cycle_count+=2;
 			break;
 		case 2:
-			effectiveAddress++;
-			my_memory[effectiveAddress] = effectiveAddress;
+			my_memory[effectiveAddress] +=1;
+			my_memory[effectiveAddress] %= 4096;
 
+			//printf("This %d\n", my_memory[effectiveAddress]);
 			//Result zero
-			if(my_memory[effectiveAddress] == 0)
-				program_counter++;
+			if(my_memory[effectiveAddress] == 0){
+				updatePC = program_counter + 2;
+				updatePC %= 4096;
+				nextPCUpdate = TRUE;
+			}
 
 			cycle_count+=2;
 			break;
 		case 3:
-			effectiveAddress = registerA;
+			my_memory[effectiveAddress] = registerA;
 			registerA = 0;
 			registerA &= 0xFFF;
 			my_memory[program_counter] = 0;
 			cycle_count+=2;
 			break;
 		case 4:
-			effectiveAddress = program_counter++;
-			program_counter = effectiveAddress++;
+			my_memory[effectiveAddress] = program_counter + 1;
+			updatePC = effectiveAddress + 1;
+			JMSUpdate = TRUE;
 			cycle_count+=2;
 			break;
 		case 5:
@@ -515,23 +501,16 @@ int compute_effectiveAddr(){
 		effectiveAddress = effectiveAddress | ( my_memory[program_counter] & mask2 );
 	}
 
-	//addr:      000001101001
-	//content:   001001110101
-	//					10001
-	//			 001001110101
 
 	checkingDI = my_memory[program_counter];
 	checkingDI >>= 8;
 	checkingDI &= 0x1;
 
-	//printf("What is this di %d\n", checkingDI);
 
 	if(checkingDI == 1)
 		effectiveAddress = my_memory[effectiveAddress];
 
-	//if(effectiveAddress != 0)
-		//printf("This is cool %d\n", effectiveAddress);
-	
+	//if(effectiveAddress != 0)	
 	return effectiveAddress;
 }
 
@@ -645,26 +624,21 @@ void second_fetch_sets(){
 			//Rotate the A register right
 
 			//1bit
-			if(rotate == 0){
-				swap = registerA;
-				registerA >>= 1;
-				registerA |= (linkBit << 11);
-				registerA &= 0xFFF;
-				linkBit = swap  & 0x1;
-			}
+			
+			swap = registerA;
+			registerA >>= 1;
+			registerA |= (linkBit << 11);
+			registerA &= 0xFFF;
+			linkBit = swap  & 0x1;
+			
 			//2bit
-			else{
+			if(rotate ==1){
 				swap = registerA;
 				registerA >>= 1;
 				registerA |= (linkBit << 11);
 				registerA &= 0xFFF;
 				linkBit = swap  & 0x1;
 
-				swap = registerA;
-				registerA >>= 1;
-				registerA |= (linkBit << 11);
-				registerA &= 0xFFF;
-				linkBit = swap  & 0x1;
 			}
 
 			strcat(instructions, "RTR ");
@@ -789,16 +763,22 @@ void third_fetch_sets(){
 	int device = my_memory[program_counter];
 	int function3bits = my_memory[program_counter];
 
+	//Update for IOT
+	_instruct = my_memory[program_counter];
+
 	device >>= 3;
 	device &= 0x3F;
 
 	function3bits &= 0x7;
 
 	if(device == 3){
-		registerA = getc(stdin);
+		registerA = getchar();
+
+		strcat(instructions, "IOT 3 ");
 	}
 	else if (device == 4){
 		putchar(registerA & 0xFF);
+		strcat(instructions, "IOT 4 ");
 		//fprintf(stderr, "Time %lld: PC=0x%03X instruction = 0x%03X (%s), rA = 0x%03X, rL = %d\n", ...);
 	}
 	else{
