@@ -1,0 +1,101 @@
+Time 1: PC=0x109 instruction = 0xEC7 (CLA CLL IAC RTL), rA = 0x004, rL = 0
+Time 3: PC=0x10A instruction = 0x680 (DCA), rA = 0x000, rL = 0
+Time 5: PC=0x10B instruction = 0x20C (TAD), rA = 0x007, rL = 0
+Time 6: PC=0x10C instruction = 0xE21 (CMA IAC), rA = 0xFF9, rL = 0
+Time 8: PC=0x10D instruction = 0x681 (DCA), rA = 0x000, rL = 0
+Time 10: PC=0x10E instruction = 0x20A (TAD), rA = 0x200, rL = 0
+Time 12: PC=0x10F instruction = 0x69C (DCA), rA = 0x000, rL = 0
+Time 15: PC=0x110 instruction = 0x39C (TAD I), rA = 0x001, rL = 0
+Time 16: PC=0x111 instruction = 0xE21 (CMA IAC), rA = 0xFFF, rL = 0
+Time 18: PC=0x112 instruction = 0x280 (TAD), rA = 0x003, rL = 1
+Time 19: PC=0x113 instruction = 0xFA8 (SZA RSS CLA), rA = 0x000, rL = 1
+Time 21: PC=0x115 instruction = 0x49C (ISZ), rA = 0x000, rL = 1
+Time 23: PC=0x116 instruction = 0x481 (ISZ), rA = 0x000, rL = 1
+Time 24: PC=0x117 instruction = 0xA90 (JMP), rA = 0x000, rL = 1
+Time 27: PC=0x110 instruction = 0x39C (TAD I), rA = 0x002, rL = 1
+Time 28: PC=0x111 instruction = 0xE21 (CMA IAC), rA = 0xFFE, rL = 1
+Time 30: PC=0x112 instruction = 0x280 (TAD), rA = 0x002, rL = 0
+Time 31: PC=0x113 instruction = 0xFA8 (SZA RSS CLA), rA = 0x000, rL = 0
+Time 33: PC=0x115 instruction = 0x49C (ISZ), rA = 0x000, rL = 0
+Time 35: PC=0x116 instruction = 0x481 (ISZ), rA = 0x000, rL = 0
+Time 36: PC=0x117 instruction = 0xA90 (JMP), rA = 0x000, rL = 0
+Time 39: PC=0x110 instruction = 0x39C (TAD I), rA = 0x003, rL = 0
+Time 40: PC=0x111 instruction = 0xE21 (CMA IAC), rA = 0xFFD, rL = 0
+Time 42: PC=0x112 instruction = 0x280 (TAD), rA = 0x001, rL = 1
+Time 43: PC=0x113 instruction = 0xFA8 (SZA RSS CLA), rA = 0x000, rL = 1
+Time 45: PC=0x115 instruction = 0x49C (ISZ), rA = 0x000, rL = 1
+Time 47: PC=0x116 instruction = 0x481 (ISZ), rA = 0x000, rL = 1
+Time 48: PC=0x117 instruction = 0xA90 (JMP), rA = 0x000, rL = 1
+Time 51: PC=0x110 instruction = 0x39C (TAD I), rA = 0x004, rL = 1
+Time 52: PC=0x111 instruction = 0xE21 (CMA IAC), rA = 0xFFC, rL = 1
+Time 54: PC=0x112 instruction = 0x280 (TAD), rA = 0x000, rL = 0
+Time 55: PC=0x113 instruction = 0xFA8 (SZA RSS CLA), rA = 0x000, rL = 0
+Time 57: PC=0x114 instruction = 0x882 (JMS), rA = 0x000, rL = 0
+Time 58: PC=0x103 instruction = 0xE80 (CLA), rA = 0x000, rL = 0
+Time 61: PC=0x104 instruction = 0x39C (TAD I), rA = 0x004, rL = 0
+Time 62: PC=0x105 instruction = 0xE21 (CMA IAC), rA = 0xFFC, rL = 0
+Time 65: PC=0x106 instruction = 0x19C (AND I), rA = 0x004, rL = 0
+Time 68: PC=0x107 instruction = 0x79C (DCA I), rA = 0x000, rL = 0
+Time 70: PC=0x108 instruction = 0xB82 (JMP I), rA = 0x000, rL = 0
+Time 72: PC=0x115 instruction = 0x49C (ISZ), rA = 0x000, rL = 0
+Time 74: PC=0x116 instruction = 0x481 (ISZ), rA = 0x000, rL = 0
+Time 75: PC=0x117 instruction = 0xA90 (JMP), rA = 0x000, rL = 0
+Time 78: PC=0x110 instruction = 0x39C (TAD I), rA = 0x005, rL = 0
+Time 79: PC=0x111 instruction = 0xE21 (CMA IAC), rA = 0xFFB, rL = 0
+Time 81: PC=0x112 instruction = 0x280 (TAD), rA = 0xFFF, rL = 0
+Time 82: PC=0x113 instruction = 0xFA8 (SZA RSS CLA), rA = 0x000, rL = 0
+Time 84: PC=0x115 instruction = 0x49C (ISZ), rA = 0x000, rL = 0
+Time 86: PC=0x116 instruction = 0x481 (ISZ), rA = 0x000, rL = 0
+Time 87: PC=0x117 instruction = 0xA90 (JMP), rA = 0x000, rL = 0
+Time 90: PC=0x110 instruction = 0x39C (TAD I), rA = 0x006, rL = 0
+Time 91: PC=0x111 instruction = 0xE21 (CMA IAC), rA = 0xFFA, rL = 0
+Time 93: PC=0x112 instruction = 0x280 (TAD), rA = 0xFFE, rL = 0
+Time 94: PC=0x113 instruction = 0xFA8 (SZA RSS CLA), rA = 0x000, rL = 0
+Time 96: PC=0x115 instruction = 0x49C (ISZ), rA = 0x000, rL = 0
+Time 98: PC=0x116 instruction = 0x481 (ISZ), rA = 0x000, rL = 0
+Time 99: PC=0x117 instruction = 0xA90 (JMP), rA = 0x000, rL = 0
+Time 102: PC=0x110 instruction = 0x39C (TAD I), rA = 0x000, rL = 0
+Time 103: PC=0x111 instruction = 0xE21 (CMA IAC), rA = 0x000, rL = 1
+Time 105: PC=0x112 instruction = 0x280 (TAD), rA = 0x004, rL = 1
+Time 106: PC=0x113 instruction = 0xFA8 (SZA RSS CLA), rA = 0x000, rL = 1
+Time 108: PC=0x115 instruction = 0x49C (ISZ), rA = 0x000, rL = 1
+Time 110: PC=0x116 instruction = 0x481 (ISZ), rA = 0x000, rL = 1
+Time 111: PC=0x118 instruction = 0xE80 (CLA), rA = 0x000, rL = 1
+Time 113: PC=0x119 instruction = 0x20B (TAD), rA = 0x384, rL = 1
+Time 115: PC=0x11A instruction = 0x89D (JMS), rA = 0x384, rL = 1
+Time 117: PC=0x11E instruction = 0x69C (DCA), rA = 0x000, rL = 1
+Time 120: PC=0x11F instruction = 0x39C (TAD I), rA = 0x044, rL = 1
+Time 121: PC=0x120 instruction = 0xF28 (SZA RSS), rA = 0x044, rL = 1
+Time 122: PC=0x122 instruction = 0xC20 (IOT 4), rA = 0x044, rL = 1
+Time 124: PC=0x123 instruction = 0x49C (ISZ), rA = 0x044, rL = 1
+Time 125: PC=0x124 instruction = 0xE80 (CLA), rA = 0x000, rL = 1
+Time 126: PC=0x125 instruction = 0xA9F (JMP), rA = 0x000, rL = 1
+Time 129: PC=0x11F instruction = 0x39C (TAD I), rA = 0x04F, rL = 1
+Time 130: PC=0x120 instruction = 0xF28 (SZA RSS), rA = 0x04F, rL = 1
+Time 131: PC=0x122 instruction = 0xC20 (IOT 4), rA = 0x04F, rL = 1
+Time 133: PC=0x123 instruction = 0x49C (ISZ), rA = 0x04F, rL = 1
+Time 134: PC=0x124 instruction = 0xE80 (CLA), rA = 0x000, rL = 1
+Time 135: PC=0x125 instruction = 0xA9F (JMP), rA = 0x000, rL = 1
+Time 138: PC=0x11F instruction = 0x39C (TAD I), rA = 0x04E, rL = 1
+Time 139: PC=0x120 instruction = 0xF28 (SZA RSS), rA = 0x04E, rL = 1
+Time 140: PC=0x122 instruction = 0xC20 (IOT 4), rA = 0x04E, rL = 1
+Time 142: PC=0x123 instruction = 0x49C (ISZ), rA = 0x04E, rL = 1
+Time 143: PC=0x124 instruction = 0xE80 (CLA), rA = 0x000, rL = 1
+Time 144: PC=0x125 instruction = 0xA9F (JMP), rA = 0x000, rL = 1
+Time 147: PC=0x11F instruction = 0x39C (TAD I), rA = 0x045, rL = 1
+Time 148: PC=0x120 instruction = 0xF28 (SZA RSS), rA = 0x045, rL = 1
+Time 149: PC=0x122 instruction = 0xC20 (IOT 4), rA = 0x045, rL = 1
+Time 151: PC=0x123 instruction = 0x49C (ISZ), rA = 0x045, rL = 1
+Time 152: PC=0x124 instruction = 0xE80 (CLA), rA = 0x000, rL = 1
+Time 153: PC=0x125 instruction = 0xA9F (JMP), rA = 0x000, rL = 1
+Time 156: PC=0x11F instruction = 0x39C (TAD I), rA = 0x00A, rL = 1
+Time 157: PC=0x120 instruction = 0xF28 (SZA RSS), rA = 0x00A, rL = 1
+Time 158: PC=0x122 instruction = 0xC20 (IOT 4), rA = 0x00A, rL = 1
+Time 160: PC=0x123 instruction = 0x49C (ISZ), rA = 0x00A, rL = 1
+Time 161: PC=0x124 instruction = 0xE80 (CLA), rA = 0x000, rL = 1
+Time 162: PC=0x125 instruction = 0xA9F (JMP), rA = 0x000, rL = 1
+Time 165: PC=0x11F instruction = 0x39C (TAD I), rA = 0x000, rL = 1
+Time 166: PC=0x120 instruction = 0xF28 (SZA RSS), rA = 0x000, rL = 1
+Time 168: PC=0x121 instruction = 0xB9D (JMP I), rA = 0x000, rL = 1
+Time 169: PC=0x11B instruction = 0xF02 (HLT), rA = 0x000, rL = 1
+DONE
