@@ -431,34 +431,34 @@ void Simulate_Reference_to_Cache_Line(CDS *cds, memory_reference *reference)
         }
 
     /* Did not find it. */
-    i = 0;
-    while (i < (cds->number_victim_lines) ){
-        if (cds->victim_c[i].valid && (cache_address == cds->victim_c[i].tag)){
-            //found it
-            //Grab the index
-            int base_c = Find_Victim_by_Replacement_Policy(cds, cache_entry_index, cds->number_of_ways);
-            //Swapping
-            cache_line temp = cds->victim_c[i];
-            cds->victim_c[i] = cds->c[base_c];
-            cds->c[base_c] = temp;
+    // int i = 0;
+    // while (i < (cds->v->number_of_cache_entries) ){
+    //     if (cds->v->c_line[i].valid && (cache_address == cds->v->c_line[i].tag)){
+    //         //found it
+    //         //Grab the index
+    //         int base_c = Find_Victim_by_Replacement_Policy(cds->c, cache_entry_index);
+    //         //Swapping
+    //         cache_line temp = cds->v->c_line[i];
+    //         cds->v->c_line[i] = cds->c->c_line[base_c];
+    //         cds->c->c_line[base_c] = temp;
 
-            cds->number_victim_cache_hits += 1;
+    //         cds->v->number_cache_hits += 1;
 
-            if (reference->type == MAT_STORE) {
-            /* If it's not write-back, then it is write-thru.
-            For write-thru, if it's a write, we write to memory. */
+    //         if (reference->type == MAT_STORE) {
+    //         /* If it's not write-back, then it is write-thru.
+    //         For write-thru, if it's a write, we write to memory. */
             
-                if (!cds->write_back)
-                    cds->number_memory_writes += 1;
-                else
-                    /* For write-back, if it's a write, it's dirty. */
-                    cds->victim_c[i].dirty = TRUE;
-            }
-            Update_Replacement_Policy_Data(cds, cache_entry_index, i);
-            return;
-        }
-        i++;
-    }
+    //             if (!cds->v->write_back)
+    //                 cds->v->number_miss_writes += 1;
+    //             else
+    //                 /* For write-back, if it's a write, it's dirty. */
+    //                 cds->v->c_line[i].dirty = TRUE;
+    //         }
+    //         Update_Replacement_Policy_Data(cds->number_of_memory_reference, cds->c, cache_entry);
+    //         return;
+    //     }
+    //     i++;
+    // }
     
     
     if (!Found)
